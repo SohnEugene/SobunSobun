@@ -19,6 +19,21 @@ Almaeng2/
 - **API Communication:** Axios
 - **Database:** (To be configured)
 
+## Continuous Deployment
+
+- Continuous Deployment (CD) is enabled for this project.  
+- Whenever changes are pushed to the `main` branch, the project is automatically deployed.
+
+**Backend**  
+- The backend is deployed via Railway.  
+- Live API: https://almaeng2-production.up.railway.app/  
+- HTTP call logs can be monitored from the [Logs tab](https://railway.com/project/cf680da0-3fcc-4bd2-91d8-f11d0f1dc935/logs?environmentId=a0901102-d5a5-4b5a-a3a0-99d53ff19713)
+
+**Frontend**  
+- The frontend is deployed via Vercel.  
+- Currently, only the customer service is deployed.  
+- Live site: https://almaeng2.vercel.app/
+
 ## Getting Started
 
 ### Prerequisites
