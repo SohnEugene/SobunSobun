@@ -137,3 +137,11 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# React build directories
+build/
+frontend-customer/build/
+frontend-shop/build/
+
+# Environment files (keep .env.example)
+backend/.env
