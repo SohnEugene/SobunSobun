@@ -49,3 +49,7 @@ backend/
 (To be documented as routes are implemented)
 
 - `GET /` - API health check
+
+## Deployment
+
+See [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md) for detailed deployment instructions to Railway.
