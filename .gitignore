@@ -145,3 +145,9 @@ frontend-shop/build/
 
 # Environment files (keep .env.example)
 backend/.env
+
+
+.DS_Store
+.idea/
+.vscode/
+.claude
