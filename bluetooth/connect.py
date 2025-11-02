@@ -1,52 +1,42 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
 
-# LFSc BLE 주소 (예시)
-KC_ADDRESS = "87D73746-3FEC-15A4-37C8-B54190681AB8"
-HOTO_ADDRESS = "D64066AB-1244-97CC-1413-83A4CEE2B7C9"
-ADDRESS = HOTO_ADDRESS
+# 연결할 장치의 주소
+TARGET_ADDRESS = "EC:4D:3E:BE:39:EA"
 
-async def scan_devices():
-    print("Scanning for BLE devices...")
-    devices = await BleakScanner.discover()
-    for d in devices:
-        name = getattr(d, 'name', 'Unknown')
-        address = getattr(d, 'address', 'Unknown')
-        rssi = getattr(d, 'rssi', 'N/A')
-        details = getattr(d, 'details', {})
-        print(f"Address: {address}, Name: {name}, RSSI: {rssi}, Details: {details}")
-    return devices
+async def main(address):
+    print(f"'{address}' 주소를 가진 장치를 찾고 연결을 시도합니다...")
 
-async def connect_device(address):
+    # 주소로 장치를 먼저 찾습니다. 타임아웃을 20초로 설정합니다.
+    device = await BleakScanner.find_device_by_address(address, timeout=20.0)
+
+    if not device:
+        print(f"오류: '{address}' 주소의 장치를 찾을 수 없습니다. 장치가 켜져 있고 범위 내에 있는지 확인하세요.")
+        return
+
+    print(f"장치를 찾았습니다. 이제 연결합니다...")
+
+    # 찾은 장치에 연결합니다.
+    async with BleakClient(device) as client:
+        if client.is_connected:
+            print(f"성공적으로 연결되었습니다!")
+
+            # 장치가 제공하는 서비스 및 특성 목록을 출력합니다.
+            print("\n--- 서비스(Services) 및 특성(Characteristics) ---")
+            for service in client.services:
+                print(f"[서비스] UUID: {service.uuid}")
+                for char in service.characteristics:
+                    # 특성의 속성(읽기, 쓰기, 알림 등)을 쉼표로 구분하여 나열합니다.
+                    properties = ", ".join(char.properties)
+                    print(f"  [특성] UUID: {char.uuid} | 속성: [{properties}]")
+            print("--------------------------------------------------\n")
+
+        else:
+            print(f"'{address}' 장치에 연결하지 못했습니다.")
+
+if __name__ == "__main__":
     try:
-        async with BleakClient(ADDRESS, timeout=60.0) as client:
-            # is_connected는 property일 수 있으므로 호출하지 않고 접근
-            connected = await client.is_connected()
-            if connected:
-                print(f"Connected to {ADDRESS}\n")
-                
-                services = await client.get_services()
-                print("Services and characteristics:")
-                for service in services:
-                    print(f"Service UUID: {service.uuid}")
-                    for char in service.characteristics:
-                        props = ', '.join(char.properties)
-                        print(f"  Characteristic UUID: {char.uuid}, Properties: {props}")
-            else:
-                print("Failed to connect")
-
+        asyncio.run(main(TARGET_ADDRESS))
     except Exception as e:
-        print(f"Error connecting to {address}: {e}")
+        print(f"오류 발생: {e}")
 
-async def main():
-    devices = await scan_devices()
-
-    # LFSc 주소를 가진 장치가 있으면 연결 시도
-    target = next((d for d in devices if getattr(d, 'address', '') == ADDRESS), None)
-    if target:
-        print(f"Found target device: {getattr(target, 'name', 'Unknown')} ({target.address})")
-        await connect_device(target.address)
-    else:
-        print(f"Target device {ADDRESS} not found during scan.")
-
-asyncio.run(main())
