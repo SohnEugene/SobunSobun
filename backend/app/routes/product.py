@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
+from typing import List
 from app.models import (
     CreateProductRequest,
-    CreateProductResponse
+    CreateProductResponse,
+    Product
 )
 from app.services.firebase import firebase_service
 
@@ -40,4 +42,38 @@ async def create_product(product_request: CreateProductRequest):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error creating product: {str(e)}"
+        )
+
+
+@router.get("/list", response_model=List[Product])
+async def get_all_products():
+    """
+    Get all products
+
+    This endpoint retrieves all products from the products collection.
+
+    Returns:
+        List of Product objects with full details
+    """
+    try:
+        products = await firebase_service.get_all_products()
+
+        # Format products for response
+        formatted_products = []
+        for product in products:
+            formatted_products.append({
+                "pid": product.get("product_id", ""),
+                "name": product.get("name", ""),
+                "price": product.get("price", 0),
+                "description": product.get("description", ""),
+                "image_url": product.get("image_url", ""),
+                "tags": product.get("tags", []),
+                "available": product.get("available", True)
+            })
+
+        return formatted_products
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching products: {str(e)}"
         )
