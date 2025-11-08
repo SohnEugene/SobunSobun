@@ -193,15 +193,21 @@ export default function RefillStartPage({ onNext, onReset }) {
           <>
             <div className={styles.refillPrice}>
               <div className={styles.refillPriceLabel}>현재 가격</div>
-              <div className={styles.refillPriceValue}>{session.totalPrice.toLocaleString()}원</div>
+              <div className={styles.refillPriceValue}>
+                {session.totalPrice.toLocaleString()}원
+              </div>
               <div className={styles.refillPriceDetail}>
                 {session.selectedProduct?.brand} {session.selectedProduct?.name}<br />
-                ₩{session.selectedProduct?.price}/g × {session.weight}g = ₩{session.totalPrice.toLocaleString()}
+                ₩{session.selectedProduct?.price}/g × {session.weight}g = ₩{(session.selectedProduct?.price * session.weight).toLocaleString()}
+                {session.purchaseContainer && (
+                  <>
+                    <br />공병 구매: ₩500
+                  </>
+                )}
               </div>
             </div>
             <div className={styles.refillBottleImage}>🧴</div>
             <Button onClick={onNext}>결제하기</Button>
-            <div className={styles.refillHint}>더 담고 싶다면 다시 저울에 올려주세요</div>
           </>
         )}
       </div>
