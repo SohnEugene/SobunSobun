@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Button from '../components/Button';
 import ProductCard from '../components/ProductCard';
 import { getKioskId } from '../services/kioskStorage';
+import { getKioskProducts } from '../services/api/kiosk';
 import { useSession } from '../contexts/SessionContext';
 import styles from '../styles/pages.module.css';
 
@@ -23,9 +24,7 @@ export default function ProductSelectionPage({ onNext }) {
         const kioskId = getKioskId();
 
         if (!kioskId) {
-          throw new Error(
-            "키오스크가 등록되지 않았습니다. /manage 페이지에서 키오스크를 등록해주세요."
-          );
+          throw new Error('키오스크가 등록되지 않았습니다. /manage 페이지에서 키오스크를 등록해주세요.');
         }
 
         // 백엔드에서 이 키오스크의 제품 목록 가져오기
@@ -35,7 +34,7 @@ export default function ProductSelectionPage({ onNext }) {
         const availableProducts = kioskProducts.filter(product => product.available);
         setProducts(availableProducts);
       } catch (err) {
-        console.error("제품 목록 로드 실패:", err);
+        console.error('제품 목록 로드 실패:', err);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -68,7 +67,9 @@ export default function ProductSelectionPage({ onNext }) {
           <div className={styles.productSelectionTitle}>
             ⚠️ 제품을 불러올 수 없습니다
           </div>
-          <div className={styles.productSelectionSubtitle}>{error}</div>
+          <div className={styles.productSelectionSubtitle}>
+            {error}
+          </div>
         </div>
       </div>
     );
@@ -95,6 +96,7 @@ export default function ProductSelectionPage({ onNext }) {
     <div className={styles.productSelectionContainer}>
       <div className={styles.productSelectionHeader}>home</div>
       <div className={styles.productSelectionContent}>
+
         <div className={styles.productSelectionTitle}>
           어떤 제품을 리필하시겠어요?
         </div>
