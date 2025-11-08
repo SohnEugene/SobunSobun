@@ -11,7 +11,7 @@ import { PRODUCT_IMAGES } from '../constants/products';
  * API 기본 URL
  * @constant {string}
  */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:8000/api';
 
 /**
  * HTTP 요청 헬퍼 함수
@@ -22,7 +22,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000
  * @returns {Promise<Object>} 응답 데이터
  */
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${BASE_URL}${endpoint}`;
 
   const config = {
     headers: {
@@ -60,7 +60,7 @@ async function request(endpoint, options = {}) {
  * const products = await getProducts();
  */
 export async function getProducts() {
-  return request('/products');
+  return request('/product/list');
 }
 
 /**
@@ -136,6 +136,64 @@ export async function updateOrderStatus(orderId, status) {
   return request(`/orders/${orderId}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ status }),
+  });
+}
+
+// ============================================================
+// 키오스크 관련 API
+// ============================================================
+
+/**
+ * 키오스크 등록
+ *
+ * @async
+ * @param {Object} kioskData - 키오스크 등록 데이터
+ * @param {string} kioskData.name - 키오스크 이름
+ * @param {string} kioskData.location - 키오스크 위치
+ * @returns {Promise<Object>} 등록된 키오스크 정보 (kid, unique_id 포함)
+ *
+ * @example
+ * const kiosk = await registerKiosk({
+ *   name: 'Kiosk #1',
+ *   location: 'Entrance A',
+ * });
+ */
+export async function registerKiosk(kioskData) {
+  return request('/kiosk/create', {
+    method: 'POST',
+    body: JSON.stringify(kioskData),
+  });
+}
+
+/**
+ * 키오스크의 제품 목록 조회
+ *
+ * @async
+ * @param {string} kioskId - 키오스크 ID
+ * @returns {Promise<Array>} 제품 목록
+ *
+ * @example
+ * const products = await getKioskProducts('kiosk_001');
+ */
+export async function getKioskProducts(kioskId) {
+  return request(`/kiosk/${kioskId}/products`);
+}
+
+/**
+ * 키오스크에 제품 추가
+ *
+ * @async
+ * @param {string} kioskId - 키오스크 ID
+ * @param {string} productId - 제품 ID
+ * @returns {Promise<Object>} 추가 결과
+ *
+ * @example
+ * const result = await addProductToKiosk('kiosk_001', 'prod_001');
+ */
+export async function addProductToKiosk(kioskId, productId) {
+  return request(`/kiosk/${kioskId}/products`, {
+    method: 'POST',
+    body: JSON.stringify({ pid: productId }),
   });
 }
 
