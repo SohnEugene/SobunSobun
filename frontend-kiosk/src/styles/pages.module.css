@@ -58,13 +58,24 @@
   left: 30px;
 }
 
-#logo1 {
-  font-weight: var(--font-weight-bold);
+.logo1 {
+  width: 200px;
 }
 
-#logo2 {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+.logo2 {
+  height: 60px;
+  opacity: 0.85;
+}
+
+.headerHomeButton {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  opacity: 0.15;
 }
 
 /* ============================================================
@@ -121,6 +132,47 @@
   margin-bottom: var(--spacing-lg);
 }
 
+.productSelectionState {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+}
+
+.productSelectionStateCard {
+  width: 100%;
+  max-width: 520px;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-xl);
+  background-color: rgba(255, 123, 97, 0.2); /* --color-primary-light @ 20% */
+  box-shadow: 0 24px 45px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.productSelectionStateCardLoading {
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.productSelectionStateIcon {
+  font-size: 72px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.productSelectionStateTitle {
+  font-size: calc(var(--font-size-4xl) * 1.2);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-md);
+}
+
+.productSelectionStateDescription {
+  font-size: calc(var(--font-size-2xl) * 1.2);
+  color: var(--color-gray-500);
+  line-height: 1.5;
+}
+
 /* ============================================================
    ContainerCheckPage Styles
    ============================================================ */
@@ -150,8 +202,17 @@
   align-items: center;
 }
 
+.containerCheckQuestionDetail {
+  font-size: 40px;
+  font-weight: var(--font-weight-semibold);
+  opacity: 60%;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
 .containerCheckQuestion {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-5xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-gray-900);
   text-align: center;
@@ -161,14 +222,16 @@
 
 .containerCheckIcon {
   font-size: 120px;
-  margin-bottom: 80px;
+  margin-top: 100px;
+  margin-bottom: 320px;
 }
 
 .containerCheckButtons {
   width: 100%;
-  max-width: 400px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: var(--spacing-md);
 }
 
@@ -257,6 +320,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: var(--spacing-xl);
 }
 
 .containerPurchaseImageContainer {
@@ -273,12 +337,13 @@
 }
 
 .containerPurchaseText {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-5xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-gray-900);
   text-align: center;
   line-height: 1.5;
-  margin-bottom: 64px;
+  margin-top: 40px;
+  margin-bottom: 104px;
 }
 
 .containerPurchaseButtons {
@@ -286,7 +351,14 @@
   max-width: 400px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--spacing-md);
+}
+
+.purchaseTextDetail {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-semibold);
+  opacity: 60%;
 }
 
 /* ============================================================
@@ -428,7 +500,8 @@
 }
 
 .refillIcon {
-  font-size: 120px;
+  height: 25vh;
+  margin-top: var(--spacing-xl);
   margin-bottom: var(--spacing-2xl);
 }
 
