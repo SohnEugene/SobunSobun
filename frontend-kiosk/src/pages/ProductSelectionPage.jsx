@@ -39,7 +39,7 @@ export default function ProductSelectionPage({ onNext, onHome }) {
         );
         setProducts(availableProducts);
       } catch (err) {
-        console.error("제품 목록 로드 실패:", err);
+        console.error('제품 목록 로드 실패:', err);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -156,6 +156,7 @@ export default function ProductSelectionPage({ onNext, onHome }) {
     <div className={styles.productSelectionContainer}>
       {renderHeader()}
       <div className={styles.productSelectionContent}>
+
         <div className={styles.productSelectionTitle}>
           어떤 제품을 리필하시겠어요?
         </div>
