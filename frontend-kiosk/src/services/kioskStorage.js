@@ -11,7 +11,6 @@ const STORAGE_KEY = 'kiosk_info';
  *
  * @param {Object} kioskInfo - 키오스크 정보
  * @param {string} kioskInfo.kid - 키오스크 ID
- * @param {string} kioskInfo.unique_id - 고유 식별자
  * @param {string} kioskInfo.name - 키오스크 이름
  * @param {string} kioskInfo.location - 키오스크 위치
  */
@@ -50,7 +49,7 @@ export function getKioskInfo() {
  */
 export function isKioskRegistered() {
   const info = getKioskInfo();
-  return info !== null && info.kid && info.unique_id;
+  return info !== null && info.kid;
 }
 
 /**
@@ -73,15 +72,7 @@ export function clearKioskInfo() {
  */
 export function getKioskId() {
   const info = getKioskInfo();
+  console.log(info);
   return info ? info.kid : null;
 }
 
-/**
- * 고유 식별자만 조회
- *
- * @returns {string|null} 고유 식별자 또는 null
- */
-export function getUniqueId() {
-  const info = getKioskInfo();
-  return info ? info.unique_id : null;
-}

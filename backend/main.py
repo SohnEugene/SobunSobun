@@ -3,11 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-# Import routers
-from app.routes import kiosk, payment, product
 
 # Import services
 from app.services.firebase import firebase_service
+# Import routers
+from app.routes import kiosks, products, payments
 
 # Load environment variables
 load_dotenv()
@@ -89,9 +89,9 @@ async def health_check():
 
 
 # Register routers
-app.include_router(kiosk.router, prefix="/api")
-app.include_router(payment.router, prefix="/api")
-app.include_router(product.router, prefix="/api")
+app.include_router(kiosks.router, prefix="/api")
+app.include_router(payments.router, prefix="/api")
+app.include_router(products.router, prefix="/api")
 
 
 # Run the application

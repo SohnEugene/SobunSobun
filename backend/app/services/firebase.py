@@ -5,6 +5,19 @@ from typing import List, Dict, Optional, Any
 from datetime import datetime
 import json
 
+from app.exceptions import (
+    KioskException,
+    KioskAlreadyExistsException,
+    KioskNotFoundException,
+    ProductException,
+    ProductNotFoundException,
+    ProductDataCorruptedException,
+    PaymentException,
+    TransactionStorageException,
+    PaymentNotFoundException
+)
+from app.models import Kiosk, Product, Payment
+
 
 class FirebaseService:
     """Firebase service for database operations"""
@@ -17,20 +30,25 @@ class FirebaseService:
         try:
             # Check if already initialized
             if not firebase_admin._apps:
-                # Get credentials from environment variable
-                firebase_json = os.environ.get("FIREBASE_CREDENTIALS_JSON")
-                if firebase_json:
-                    cred = credentials.Certificate(json.loads(firebase_json))
+                # Try to get credentials from file path first
+                cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+                if cred_path:
+                    cred = credentials.Certificate(cred_path)
                     firebase_admin.initialize_app(cred)
                 else:
-                    # For development, you can also use a credentials JSON string
-                    cred_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
-                    if cred_json:
-                        cred_dict = json.loads(cred_json)
-                        cred = credentials.Certificate(cred_dict)
+                    # Fall back to credentials JSON string
+                    firebase_json = os.environ.get("FIREBASE_CREDENTIALS_JSON")
+                    if firebase_json:
+                        cred = credentials.Certificate(json.loads(firebase_json))
                         firebase_admin.initialize_app(cred)
                     else:
-                        raise ValueError("Firebase credentials not found. Set FIREBASE_CREDENTIALS_PATH or FIREBASE_CREDENTIALS_JSON")
+                        cred_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+                        if cred_json:
+                            cred_dict = json.loads(cred_json)
+                            cred = credentials.Certificate(cred_dict)
+                            firebase_admin.initialize_app(cred)
+                        else:
+                            raise ValueError("Firebase credentials not found. Set FIREBASE_CREDENTIALS_PATH or FIREBASE_CREDENTIALS_JSON")
 
                 self.db = firestore.client()
                 print("Firebase initialized successfully")
@@ -43,7 +61,7 @@ class FirebaseService:
             raise
 
     # Counter operations
-    async def get_next_counter(self, counter_name: str) -> int:
+    def get_next_counter(self, counter_name: str) -> int:
         """Get next counter value and increment"""
         try:
             counter_ref = self.db.collection('counters').document(counter_name)
@@ -62,8 +80,85 @@ class FirebaseService:
             print(f"Error getting counter {counter_name}: {e}")
             raise
 
-    # Kiosk operations
-    async def get_all_kiosks(self) -> List[Dict[str, Any]]:
+
+
+    # Kiosk operation ---------------------------------------------------------
+    def register_kiosk(self, kiosk_data: Dict[str, Any]) -> str:
+        """Register a new kiosk with sequential ID (kiosk_001, kiosk_002, ...)"""
+        # 1. Get next sequential ID
+        try:
+            counter = self.get_next_counter('kiosk_counter')
+        except Exception as e:
+            raise KioskException(f"Failed to get kiosk counter: {str(e)}") from e
+
+        kiosk_id = f"kiosk_{counter:03d}"
+
+        # 2. Add timestamps
+        kiosk_data['created_at'] = datetime.now()
+        kiosk_data['updated_at'] = datetime.now()
+
+        # 3. Reference Firestore document
+        doc_ref = self.db.collection('kiosks').document(kiosk_id)
+
+        # 4. Check if kiosk already exists
+        try:
+            doc_snapshot = doc_ref.get()
+        except Exception as e:
+            raise KioskException(f"Failed to check existing kiosk {kiosk_id}: {str(e)}") from e
+
+        if doc_snapshot.exists:
+            raise KioskAlreadyExistsException(kid=kiosk_id)
+
+        # 5. Save kiosk
+        try:
+            doc_ref.set(kiosk_data)
+        except Exception as e:
+            raise KioskException(f"Failed to register kiosk {kiosk_id}: {str(e)}") from e
+
+        return kiosk_id
+
+    def get_kiosk_by_id(self, kid: str) -> Kiosk:
+        """Get a specific kiosk by kid"""
+        # 1. Get document reference and fetch
+        doc_ref = self.db.collection('kiosks').document(kid)
+
+        try:
+            doc = doc_ref.get()
+        except Exception as e:
+            raise KioskException(f"Failed to get kiosk {kid}: {str(e)}") from e
+
+        # 2. Check if kiosk exists
+        if not doc.exists:
+            raise KioskNotFoundException(kid=kid)
+
+        # 3. Convert to Kiosk model
+        data = doc.to_dict()
+        return Kiosk(kid=doc.id, **data)
+    
+    def update_kiosk(self, kid: str, kiosk_data: Dict[str, Any]) -> None:
+        """Update an existing kiosk"""
+        # 1. Get document reference
+        doc_ref = self.db.collection('kiosks').document(kid)
+
+        # 2. Check if kiosk exists
+        try:
+            doc = doc_ref.get()
+        except Exception as e:
+            raise KioskException(f"Failed to check kiosk {kid}: {str(e)}") from e
+
+        if not doc.exists:
+            raise KioskNotFoundException(kid=kid)
+
+        # 3. Add updated timestamp
+        kiosk_data['updated_at'] = datetime.now()
+
+        # 4. Update kiosk
+        try:
+            doc_ref.update(kiosk_data)
+        except Exception as e:
+            raise KioskException(f"Failed to update kiosk {kid}: {str(e)}") from e
+
+    def get_all_kiosks(self) -> List[Dict[str, Any]]:
         """Get all kiosks from Firebase"""
         try:
             kiosks_ref = self.db.collection('kiosks')
@@ -80,57 +175,35 @@ class FirebaseService:
             print(f"Error getting kiosks: {e}")
             return []
 
-    async def get_kiosk_by_id(self, kiosk_id: str) -> Optional[Dict[str, Any]]:
-        """Get a specific kiosk by ID"""
+
+
+    # Product operations -------------------------------------------------
+    def register_product(self, product_data: Dict[str, Any]) -> str:
+        """Create a new product with sequential ID (prod_001, prod_002, ...)"""
+        # 1. Get next sequential ID
         try:
-            doc_ref = self.db.collection('kiosks').document(kiosk_id)
-            doc = doc_ref.get()
-
-            if doc.exists:
-                kiosk_data = doc.to_dict()
-                kiosk_data['kiosk_id'] = doc.id
-                return kiosk_data
-            return None
+            counter = self.get_next_counter('product_counter')
         except Exception as e:
-            print(f"Error getting kiosk {kiosk_id}: {e}")
-            return None
+            raise ProductException(f"Failed to get product counter: {str(e)}") from e
 
-    async def create_kiosk(self, kiosk_data: Dict[str, Any]) -> str:
-        """Create a new kiosk with sequential ID (kiosk_001, kiosk_002, ...)"""
+        # 2. Create product ID with zero-padding
+        product_id = f"prod_{counter:03d}"
+
+        # 3. Add product_id to product data
+        product_data['product_id'] = product_id
+
+        # 4. Reference Firestore document
+        doc_ref = self.db.collection('products').document(product_id)
+
+        # 5. Save product
         try:
-            # Get next counter value
-            counter = await self.get_next_counter('kiosk_counter')
-
-            # Create kiosk ID with zero-padding (kiosk_001, kiosk_002, ...)
-            kiosk_id = f"kiosk_{counter:03d}"
-
-            kiosk_data['created_at'] = datetime.now()
-            kiosk_data['updated_at'] = datetime.now()
-
-            # Use the custom kiosk_id as document ID
-            doc_ref = self.db.collection('kiosks').document(kiosk_id)
-            doc_ref.set(kiosk_data)
-
-            return kiosk_id
+            doc_ref.set(product_data)
         except Exception as e:
-            print(f"Error creating kiosk: {e}")
-            raise
+            raise ProductException(f"Failed to create product {product_id}: {str(e)}") from e
 
-    async def update_kiosk(self, kiosk_id: str, kiosk_data: Dict[str, Any]) -> bool:
-        """Update an existing kiosk"""
-        try:
-            kiosk_data['updated_at'] = datetime.now()
-
-            doc_ref = self.db.collection('kiosks').document(kiosk_id)
-            doc_ref.update(kiosk_data)
-
-            return True
-        except Exception as e:
-            print(f"Error updating kiosk {kiosk_id}: {e}")
-            return False
-
-    # Product operations
-    async def get_all_products(self) -> List[Dict[str, Any]]:
+        return product_id
+    
+    def get_all_products(self) -> List[Product]:
         """Get all products from Firebase"""
         try:
             products_ref = self.db.collection('products')
@@ -139,64 +212,112 @@ class FirebaseService:
             products = []
             for doc in docs:
                 product_data = doc.to_dict()
-                product_data['product_id'] = doc.id
-                products.append(product_data)
+                try:
+                    product = Product(**product_data, pid=doc.id)
+                    products.append(product)
+                except Exception as e:
+                    raise ProductDataCorruptedException(pid=doc.id, reason=str(e)) from e
 
             return products
-        except Exception as e:
-            print(f"Error getting products: {e}")
-            return []
-
-    async def get_product_by_id(self, product_id: str) -> Optional[Dict[str, Any]]:
-        """Get a specific product by ID"""
-        try:
-            doc_ref = self.db.collection('products').document(product_id)
-            doc = doc_ref.get()
-
-            if doc.exists:
-                product_data = doc.to_dict()
-                product_data['product_id'] = doc.id
-                return product_data
-            return None
-        except Exception as e:
-            print(f"Error getting product {product_id}: {e}")
-            return None
-
-    async def create_product(self, product_data: Dict[str, Any]) -> str:
-        """Create a new product with sequential ID (prod_001, prod_002, ...)"""
-        try:
-            # Get next counter value
-            counter = await self.get_next_counter('product_counter')
-
-            # Create product ID with zero-padding (prod_001, prod_002, ...)
-            product_id = f"prod_{counter:03d}"
-
-            # Add product_id to product data
-            product_data['product_id'] = product_id
-            product_data['available'] = product_data.get('available', True)
-
-            # Use the custom product_id as document ID
-            doc_ref = self.db.collection('products').document(product_id)
-            doc_ref.set(product_data)
-
-            return product_id
-        except Exception as e:
-            print(f"Error creating product: {e}")
+        except ProductDataCorruptedException:
             raise
-
-    async def update_product(self, product_id: str, product_data: Dict[str, Any]) -> bool:
-        """Update an existing product"""
-        try:
-            doc_ref = self.db.collection('products').document(product_id)
-            doc_ref.update(product_data)
-
-            return True
         except Exception as e:
-            print(f"Error updating product {product_id}: {e}")
-            return False
+            raise ProductException(f"Failed to get all products: {str(e)}") from e
 
-    # Transaction operations
-    async def get_all_transactions(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
+    def get_product_by_id(self, pid: str) -> Product:
+        """Get a specific product by ID"""
+        # 1. Get document reference and fetch
+        doc_ref = self.db.collection('products').document(pid)
+
+        try:
+            doc = doc_ref.get()
+        except Exception as e:
+            raise ProductException(f"Failed to get product {pid}: {str(e)}") from e
+
+        # 2. Check if product exists
+        if not doc.exists:
+            raise ProductNotFoundException(pid=pid)
+
+        # 3. Convert to Product model
+        data = doc.to_dict()
+        try:
+            return Product(**data, pid=doc.id)
+        except Exception as e:
+            raise ProductDataCorruptedException(pid=pid, reason=str(e)) from e
+    
+    def update_product(self, product_id: str, product_data: Dict[str, Any]) -> None:
+        """Update an existing product"""
+        # 1. Get document reference
+        doc_ref = self.db.collection('products').document(product_id)
+
+        # 2. Check if product exists
+        try:
+            doc = doc_ref.get()
+        except Exception as e:
+            raise ProductException(f"Failed to check product {product_id}: {str(e)}") from e
+
+        if not doc.exists:
+            raise ProductNotFoundException(pid=product_id)
+
+        # 3. Update product
+        try:
+            doc_ref.update(product_data)
+        except Exception as e:
+            raise ProductException(f"Failed to update product {product_id}: {str(e)}") from e
+
+
+
+    # Transaction operations -------------------------------------------------
+    def create_transaction(self, payment_data: Dict[str, Any]) -> str:
+        """Create a new transaction/payment in Firebase with initial status ONGOING"""
+        # 1. Add timestamps and initial status
+        try:
+            payment_data['status'] = "ONGOING"        # 승인 전 상태
+            payment_data['completed'] = False         # 완료 여부
+            payment_data['created_at'] = datetime.now()
+            payment_data['approved_at'] = None
+        except Exception as e:
+            raise TransactionStorageException(txid="N/A", reason=f"Failed to prepare transaction data: {str(e)}") from e
+
+        # 2. Reference Firestore document
+        try:
+            doc_ref = self.db.collection('transactions').document()
+        except Exception as e:
+            raise TransactionStorageException(txid="N/A", reason=f"Failed to get Firestore document reference: {str(e)}") from e
+
+        # 3. Save transaction to Firebase
+        try:
+            doc_ref.set(payment_data)
+            return doc_ref.id  # txid
+        except Exception as e:
+            raise TransactionStorageException(txid="N/A", reason=f"Failed to create transaction in Firebase: {str(e)}") from e
+
+    def update_transaction(self, txid: str, updates: Dict[str, Any]) -> None:
+        """Update an existing transaction after approval or other events."""
+        # 1. Reference Firestore document
+        try:
+            doc_ref = self.db.collection('transactions').document(txid)
+            doc = doc_ref.get()
+        except Exception as e:
+            raise TransactionStorageException(txid=txid, reason=f"Failed to reference transaction: {str(e)}") from e
+
+        # 2. Check if transaction exists
+        if not doc.exists:
+            raise PaymentNotFoundException(txid=txid)
+
+        # 3. Add updated timestamp
+        try:
+            updates['updated_at'] = datetime.now()
+        except Exception as e:
+            raise TransactionStorageException(txid=txid, reason=f"Failed to add update timestamp: {str(e)}") from e
+
+        # 4. Update transaction in Firebase
+        try:
+            doc_ref.update(updates)
+        except Exception as e:
+            raise TransactionStorageException(txid=txid, reason=f"Failed to update transaction in Firebase: {str(e)}") from e
+
+    def get_all_transactions(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
         """Get all transactions from Firebase"""
         try:
             transactions_ref = self.db.collection('transactions').order_by('timestamp', direction=firestore.Query.DESCENDING)
@@ -217,33 +338,33 @@ class FirebaseService:
             print(f"Error getting transactions: {e}")
             return []
 
-    async def get_transaction_by_id(self, transaction_id: str) -> Optional[Dict[str, Any]]:
-        """Get a specific transaction by ID"""
+    def get_transaction_by_id(self, txid: str) -> Optional[Payment]:
+        """Get a specific transaction/payment by txid and return as Payment model"""
         try:
-            doc_ref = self.db.collection('transactions').document(transaction_id)
+            doc_ref = self.db.collection('transactions').document(txid)
             doc = doc_ref.get()
-
-            if doc.exists:
-                transaction_data = doc.to_dict()
-                transaction_data['transaction_id'] = doc.id
-                return transaction_data
-            return None
         except Exception as e:
-            print(f"Error getting transaction {transaction_id}: {e}")
-            return None
+            raise PaymentException(f"Failed to access transaction {txid}: {str(e)}") from e
 
-    async def create_transaction(self, transaction_data: Dict[str, Any]) -> str:
-        """Create a new transaction"""
+        if not doc.exists:
+            raise PaymentNotFoundException(txid)
+
         try:
-            doc_ref = self.db.collection('transactions').document()
-            doc_ref.set(transaction_data)
+            data = doc.to_dict()
 
-            return doc_ref.id
+            # Firestore timestamp → datetime 처리 (optional)
+            if 'created_at' in data and hasattr(data['created_at'], 'to_pydatetime'):
+                data['created_at'] = data['created_at'].to_pydatetime()
+            if 'approved_at' in data and data['approved_at'] and hasattr(data['approved_at'], 'to_pydatetime'):
+                data['approved_at'] = data['approved_at'].to_pydatetime()
+
+            # txid는 doc.id로 덮어쓰기
+            return Payment(**data, txid=doc.id)
+
         except Exception as e:
-            print(f"Error creating transaction: {e}")
-            raise
+            raise PaymentException(f"Failed to parse transaction {txid} data: {str(e)}") from e
 
-    async def get_transactions_by_kiosk(self, kiosk_id: str) -> List[Dict[str, Any]]:
+    def get_transactions_by_kiosk(self, kiosk_id: str) -> List[Dict[str, Any]]:
         """Get all transactions for a specific kiosk"""
         try:
             transactions_ref = self.db.collection('transactions').where('kiosk_id', '==', kiosk_id).order_by('timestamp', direction=firestore.Query.DESCENDING)

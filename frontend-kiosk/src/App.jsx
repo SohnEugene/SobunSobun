@@ -12,7 +12,7 @@ import PaymentCompletePage from './pages/PaymentCompletePage';
 import ManagementPage from './pages/ManagementPage';
 import { useBluetooth } from './hooks/useBluetooth';
 import { BluetoothProvider } from './contexts/BluetoothContext';
-import { SessionProvider } from './contexts/SessionContext';
+import { SessionProvider, useSession } from './contexts/SessionContext';
 
 export default function App() {
   return (
@@ -33,6 +33,7 @@ export default function App() {
 function KioskFlow() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState('home');
+  const { resetSession } = useSession();
 
   // BLE 관련 상태와 함수 (커스텀 훅)
   const {
@@ -67,7 +68,8 @@ function KioskFlow() {
   };
 
   const resetToHome = () => {
-    console.log('🏠 resetToHome 호출됨');
+    console.log('🏠 resetToHome 호출됨 - 세션 초기화');
+    resetSession();
     setCurrentPage('home');
   };
 
