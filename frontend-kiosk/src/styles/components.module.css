@@ -11,7 +11,7 @@
    ============================================================ */
 
 .button {
-  font-size: 56px;
+  font-size: 48px;
   font-weight: var(--font-weight-bold);
   border: none;
   cursor: pointer;
@@ -46,6 +46,35 @@
   color: var(--btn-primary-text);
 }
 
+.buttonDouble {
+  background-color: var(--btn-primary);
+  color: var(--btn-primary-text);
+  border: none;
+  height: 8.5vh; /* 15% shorter than default 10vh */
+  font-size: 40px;
+}
+
+.buttonOutlinedDouble {
+  background-color: transparent;
+  color: var(--btn-outline);
+  border: 2px solid var(--btn-outline);
+  height: 8.5vh; /* 15% shorter than default 10vh */
+  font-size: 40px;
+}
+
+.buttonDouble:hover:not(:disabled) {
+  background-color: var(--btn-primary-hover);
+}
+
+.buttonSmall {
+  width: auto;
+  height: auto;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-3xl);
+  background-color: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
 /* ============================================================
    ProductCard Component Styles
    ============================================================ */
@@ -60,7 +89,7 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: var(--spacing-md);
-  height: 15vh;
+  height: 15.5vh;
 }
 
 .productCard:hover {
@@ -75,13 +104,14 @@
 }
 
 .productCardImage {
-  width: 180px;
-  height: 180px;
+  width: 160px;
+  height: 160px;
   object-fit: cover;
   border-radius: var(--radius-md);
   margin-right: var(--spacing-md);
   background-color: var(--ui-hover);
   flex-shrink: 0;
+  border: 2px solid var(--color-gray);
 }
 
 .productCardInfo {
