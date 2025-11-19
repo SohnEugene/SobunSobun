@@ -152,3 +152,4 @@ backend/.env
 .vscode/
 .claude
 screenshots/
+backend/firebase_credentials.json
