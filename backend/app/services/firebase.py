@@ -20,6 +20,7 @@ from app.exceptions import (
     PaymentNotFoundException
 )
 from app.models import Kiosk, Product, Payment
+from app.services.s3 import S3Service
 
 
 class FirebaseService:
@@ -228,7 +229,7 @@ class FirebaseService:
         return product_id
     
     def get_all_products(self) -> List[Product]:
-        """Get all products from Firebase"""
+        """Get all products from Firebase with presigned URLs"""
         try:
             products_ref = self.db.collection('products')
             docs = products_ref.stream()
@@ -238,6 +239,8 @@ class FirebaseService:
                 product_data = doc.to_dict()
                 try:
                     product = Product(**product_data, pid=doc.id)
+                    # Convert S3 key to presigned URL
+                    product.image_url = S3Service.convert_to_presigned_url(product.image_url)
                     products.append(product)
                 except Exception as e:
                     raise ProductDataCorruptedException(pid=doc.id, reason=str(e)) from e
@@ -249,7 +252,7 @@ class FirebaseService:
             raise ProductException(f"Failed to get all products: {str(e)}") from e
 
     def get_product_by_id(self, pid: str) -> Product:
-        """Get a specific product by ID"""
+        """Get a specific product by ID with presigned URL"""
         # 1. Get document reference and fetch
         doc_ref = self.db.collection('products').document(pid)
 
@@ -265,7 +268,10 @@ class FirebaseService:
         # 3. Convert to Product model
         data = doc.to_dict()
         try:
-            return Product(**data, pid=doc.id)
+            product = Product(**data, pid=doc.id)
+            # Convert S3 key to presigned URL
+            product.image_url = S3Service.convert_to_presigned_url(product.image_url)
+            return product
         except Exception as e:
             raise ProductDataCorruptedException(pid=pid, reason=str(e)) from e
     

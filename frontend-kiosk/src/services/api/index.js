@@ -16,7 +16,8 @@ export { getProducts, getProductById } from './product.js';
 // - registerKiosk(data): 키오스크 등록 (POST /kiosk/)
 // - getKioskProducts(kid): 키오스크 제품 목록 조회 (GET /kiosk/{kid}/products)
 // - addProductToKiosk(kid, pid): 키오스크에 제품 추가 (POST /kiosk/{kid}/products)
-export { createKiosk as registerKiosk, getKioskProducts, addProductToKiosk } from './kiosk.js';
+// - removeProductFromKiosk(kid, pid): 키오스크에서 제품 제거 (DELETE /kiosk/{kid}/products/{pid})
+export { createKiosk as registerKiosk, getKioskProducts, addProductToKiosk, removeProductFromKiosk } from './kiosk.js';
 
 // Payment APIs
 // - preparePayment(data): 결제 준비 (POST /payment/prepare)

@@ -150,13 +150,13 @@ async def get_kiosk_products(kid: str):
     if not kiosk.products:
         return {"products": []}
 
-    # 2. Fetch full product details for each product
+    # 2. Fetch full product details for each product (presigned URLs included)
     products = []
     for kiosk_prod in kiosk.products:
         product_id = kiosk_prod.get('pid')
         kiosk_available = kiosk_prod.get('available', False)
 
-        # Fetch product
+        # Fetch product (presigned URL conversion happens in firebase_service)
         product = firebase_service.get_product_by_id(product_id)
 
         # Add product with kiosk-specific availability

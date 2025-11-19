@@ -64,3 +64,21 @@ export async function addProductToKiosk(kioskId, productId) {
     body: JSON.stringify({ pid: productId }),
   });
 }
+
+/**
+ * 키오스크에서 제품 제거
+ *
+ * @async
+ * @param {string} kioskId - 키오스크 ID (kid)
+ * @param {string} productId - 제품 ID (pid)
+ * @returns {Promise<Object>} { message: string }
+ *
+ * @example
+ * const result = await removeProductFromKiosk('kiosk_001', 'prod_001');
+ * console.log(result.message); // "Product prod_001 removed from kiosk kiosk_001"
+ */
+export async function removeProductFromKiosk(kioskId, productId) {
+  return request(`/kiosks/${kioskId}/products/${productId}`, {
+    method: 'DELETE',
+  });
+}

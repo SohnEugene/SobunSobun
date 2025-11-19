@@ -6,7 +6,7 @@ from app.models import (
     Product
 )
 from app.services.firebase import firebase_service
-from app.services.s3 import S3Service
+from app.services.s3 import S3Service, S3UploadException, S3ConfigException
 
 router = APIRouter(
     prefix="/products",
@@ -20,6 +20,7 @@ async def get_all_products():
     Get all products
 
     This endpoint retrieves all products from the products collection.
+    Image URLs are automatically converted to presigned S3 URLs.
 
     Returns:
         List of Product objects with full details
@@ -28,8 +29,7 @@ async def get_all_products():
         ProductDataCorruptedException: 500 if product data is corrupted
         ProductException: 500 for other errors
     """
-    products = firebase_service.get_all_products()
-    return products
+    return firebase_service.get_all_products()
 
 
 @router.post("/", response_model=RegisterProductResponse, status_code=status.HTTP_201_CREATED)
@@ -68,6 +68,7 @@ async def get_product_by_id(pid: str):
     Get a product by ID
 
     This endpoint retrieves detailed information about a specific product.
+    Image URL is automatically converted to presigned S3 URL.
 
     Args:
         product_id: Product ID (e.g., "prod_001")
@@ -79,8 +80,7 @@ async def get_product_by_id(pid: str):
         ProductNotFoundException: 404 if product not found
         ProductException: 500 for other errors
     """
-    product = firebase_service.get_product_by_id(pid)
-    return product
+    return firebase_service.get_product_by_id(pid)
 
 @router.put("/{pid}", status_code=status.HTTP_200_OK)
 async def update_product(pid: str, product_request: RegisterProductRequest):
@@ -137,10 +137,8 @@ async def upload_product_image(pid: str, file: UploadFile = File(...)):
         HTTPException: 404 if product not found
         HTTPException: 500 if upload fails
     """
-    # Verify product exists
-    product = firebase_service.get_product_by_id(pid)
-    if not product:
-        raise HTTPException(status_code=404, detail=f"Product {pid} not found")
+    # Verify product exists (will raise ProductNotFoundException if not found)
+    firebase_service.get_product_by_id(pid)
 
     # Determine content type
     content_type = file.content_type or "image/png"
@@ -150,14 +148,17 @@ async def upload_product_image(pid: str, file: UploadFile = File(...)):
     s3_key = f"products/{pid}.{file_extension}"
 
     # Upload to S3
-    success = S3Service.upload_file(file.file, s3_key, content_type)
-    if not success:
-        raise HTTPException(status_code=500, detail="Failed to upload image to S3")
+    try:
+        S3Service.upload_file(file.file, s3_key, content_type)
+    except S3ConfigException as e:
+        raise HTTPException(status_code=503, detail=f"S3 service not configured: {e.reason}")
+    except S3UploadException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to upload image: {e.reason}")
 
     # Update product with S3 key
-    firebase_service.update_product(pid, {"image_key": s3_key})
+    firebase_service.update_product(pid, {"image_key": s3_key, "image_url": s3_key})
 
-    return {"message": f"Image uploaded successfully", "s3_key": s3_key}
+    return {"message": "Image uploaded successfully", "s3_key": s3_key}
 
 
 @router.get("/{pid}/image-url", status_code=status.HTTP_200_OK)

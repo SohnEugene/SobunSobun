@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProducts, createProduct, updateProduct, deleteProduct, uploadProductImage, getProductImageUrl } from '../services/api';
+import { getProducts, createProduct, updateProduct, deleteProduct, uploadProductImage } from '../services/api';
 import { formatPrice } from '../utils/formatters';
 import Button from '../components/Button';
 import styles from './ProductsPage.module.css';
@@ -28,23 +28,7 @@ function ProductsPage() {
     try {
       setLoading(true);
       const data = await getProducts();
-
-      // Load presigned URLs for products with image_key
-      const productsWithImages = await Promise.all(
-        data.map(async (product) => {
-          if (product.image_key) {
-            try {
-              const { url } = await getProductImageUrl(product.pid);
-              return { ...product, image_url: url };
-            } catch {
-              return product;
-            }
-          }
-          return product;
-        })
-      );
-
-      setProducts(productsWithImages);
+      setProducts(data);
     } catch (err) {
       setError(err.message);
     } finally {

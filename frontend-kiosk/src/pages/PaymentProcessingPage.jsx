@@ -128,9 +128,6 @@ export default function PaymentProcessingPage({ onNext }) {
               alt="결제 QR 코드"
               style={{ margin: '20px 0', maxWidth: '400px', height: 'auto' }}
             />
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '20px' }}>
-              거래번호: {txid}
-            </div>
 
             <div className={styles.paymentProcessingAction}>
               <Button

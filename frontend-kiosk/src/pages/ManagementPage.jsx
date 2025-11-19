@@ -4,6 +4,7 @@ import {
   registerKiosk,
   getKioskProducts,
   addProductToKiosk,
+  removeProductFromKiosk,
   getProducts,
 } from "../services/api";
 import {
@@ -25,6 +26,7 @@ const VIEWS = {
   REGISTER: "register",
   PRODUCTS: "products",
   MANAGER: "manager",
+  BLUETOOTH: "bluetooth",
 };
 
 export default function ManagementPage() {
@@ -184,6 +186,26 @@ export default function ManagementPage() {
     }
   };
 
+  const handleRemoveProduct = async (productId) => {
+    if (!registeredInfo?.kid) return;
+
+    if (!window.confirm(`제품 ${productId}을(를) 키오스크에서 제거하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setProductLoading(true);
+      setProductError(null);
+      await removeProductFromKiosk(registeredInfo.kid, productId);
+      alert(`제품 ${productId}이(가) 키오스크에서 제거되었습니다.`);
+      await loadKioskProducts();
+    } catch (err) {
+      setProductError(err.message || "제품 제거에 실패했습니다.");
+    } finally {
+      setProductLoading(false);
+    }
+  };
+
   const goHome = () => setCurrentView(VIEWS.HOME);
 
   const renderRegisteredSummary = (options = { showActions: true }) => {
@@ -267,38 +289,54 @@ export default function ManagementPage() {
     </section>
   );
 
-  const renderBluetoothPanel = () => (
-    <section className="management-panel bluetooth-panel">
-      <div className="bluetooth-header">
-        <h3>Bluetooth 저울 연결</h3>
-        {bleError && <span className="error-inline">⚠️ {bleError}</span>}
-      </div>
-      <div className="bluetooth-status">
-        <div className="status-info">
-          <span className="status-icon">{isConnected ? "✅" : "⚠️"}</span>
-          <div>
-            <p className="device-name">
-              {isConnected
-                ? `연결됨: ${deviceName || "저울"}`
-                : "저울이 연결되지 않았습니다"}
-            </p>
-            <p className="current-weight">
-              {isConnected ? `${weight} g` : "—"}
-            </p>
-          </div>
+  const renderBluetoothView = () => (
+    <section className="management-panel">
+      <div className="subpage-header">
+        <div>
+          <p className="panel-eyebrow">STEP 04</p>
+          <h2>블루투스 저울 연결</h2>
+          <p className="panel-description">
+            무게 측정을 위한 블루투스 저울을 연결하세요.
+          </p>
         </div>
-        <button
-          type="button"
-          className={isConnected ? "btn-danger" : "btn-primary"}
-          onClick={isConnected ? disconnect : connect}
-          disabled={isConnecting}
-        >
-          {isConnected
-            ? "연결 해제"
-            : isConnecting
-            ? "연결 중..."
-            : "저울 연결"}
-        </button>
+      </div>
+
+      <div className="management-subpanel">
+        <div className="bluetooth-status" style={{ padding: '20px' }}>
+          <div className="status-info">
+            <span className="status-icon" style={{ fontSize: '48px' }}>
+              {isConnected ? "✅" : "⚠️"}
+            </span>
+            <div>
+              <p className="device-name" style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                {isConnected
+                  ? `연결됨: ${deviceName || "저울"}`
+                  : "저울이 연결되지 않았습니다"}
+              </p>
+              <p className="current-weight" style={{ fontSize: '32px', marginTop: '8px' }}>
+                {isConnected ? `${weight} g` : "—"}
+              </p>
+            </div>
+          </div>
+          {bleError && (
+            <div className="error-message" style={{ marginTop: '16px' }}>
+              ⚠️ {bleError}
+            </div>
+          )}
+          <button
+            type="button"
+            className={isConnected ? "btn-danger" : "btn-primary"}
+            onClick={isConnected ? disconnect : connect}
+            disabled={isConnecting}
+            style={{ marginTop: '20px', width: '100%', padding: '16px', fontSize: '18px' }}
+          >
+            {isConnected
+              ? "연결 해제"
+              : isConnecting
+              ? "연결 중..."
+              : "저울 연결"}
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -342,8 +380,19 @@ export default function ManagementPage() {
           <p>결제를 처리할 관리자를 선택합니다.</p>
           <span className="card-link">관리자 선택 →</span>
         </button>
+        <button
+          type="button"
+          className="home-action-card"
+          onClick={() => setCurrentView(VIEWS.BLUETOOTH)}
+        >
+          <span className="card-eyebrow">STEP 04</span>
+          <h3>블루투스 저울 연결</h3>
+          <p>무게 측정을 위한 저울을 연결합니다.</p>
+          <span className="card-link">
+            {isConnected ? `연결됨: ${deviceName || "저울"}` : "저울 연결 →"}
+          </span>
+        </button>
       </div>
-      {renderBluetoothPanel()}
     </div>
   );
 
@@ -574,6 +623,14 @@ export default function ManagementPage() {
                     >
                       {product.available ? "판매중" : "품절"}
                     </span>
+                    <button
+                      type="button"
+                      className="btn-danger btn-inline compact-danger"
+                      onClick={() => handleRemoveProduct(product.pid)}
+                      disabled={productLoading}
+                    >
+                      제거
+                    </button>
                   </div>
                 </div>
               ))}
@@ -635,6 +692,7 @@ export default function ManagementPage() {
         {currentView === VIEWS.REGISTER && renderRegisterView()}
         {currentView === VIEWS.PRODUCTS && renderProductView()}
         {currentView === VIEWS.MANAGER && renderManagerView()}
+        {currentView === VIEWS.BLUETOOTH && renderBluetoothView()}
       </main>
       <footer>
         <img src="logo_black.png" className="management-logo" alt="" />

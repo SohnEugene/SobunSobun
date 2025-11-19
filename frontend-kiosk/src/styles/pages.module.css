@@ -692,6 +692,8 @@
   max-width: 500px;
   margin: 0 auto;
   padding: var(--spacing-xl) 0;
+  display: flex;
+  justify-content: center;
 }
 
 .paymentMethodOption {
@@ -788,6 +790,8 @@
 
 .paymentProcessingAction {
   margin-top: var(--spacing-2xl);
+  display: flex;
+  justify-content: center;
 }
 
 /* ============================================================
