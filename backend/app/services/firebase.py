@@ -33,10 +33,12 @@ class FirebaseService:
                 # Try to get credentials from file path first
                 cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
                 if cred_path:
+                    print("use credentials path")
                     cred = credentials.Certificate(cred_path)
                     firebase_admin.initialize_app(cred)
                 else:
                     # Fall back to credentials JSON string
+                    print("use credentials json")
                     firebase_json = os.environ.get("FIREBASE_CREDENTIALS_JSON")
                     if firebase_json:
                         cred = credentials.Certificate(json.loads(firebase_json))
