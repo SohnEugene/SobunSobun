@@ -40,6 +40,10 @@ def get_s3_client():
         secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "").strip()
         region = os.getenv("AWS_REGION", "ap-northeast-2").strip()
 
+        # Debug: 환경변수 값 확인 (첫 4자만 출력)
+        print(f"AWS_ACCESS_KEY_ID starts with: '{access_key[:4] if access_key else 'EMPTY'}'")
+        print(f"AWS_ACCESS_KEY_ID length: {len(access_key)}")
+
         if not access_key or not secret_key:
             raise S3ConfigException("AWS credentials not configured")
 
