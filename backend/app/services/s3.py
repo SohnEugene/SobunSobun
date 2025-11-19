@@ -18,7 +18,7 @@ def get_s3_client():
     return _s3_client
 
 def get_bucket_name():
-    return os.getenv("S3_BUCKET_NAME", "almaeng2-images")
+    return os.getenv("S3_BUCKET_NAME", "almaeng2")
 
 
 class S3Service:
@@ -32,15 +32,22 @@ class S3Service:
         :return: 업로드 성공 여부
         """
         try:
-            get_s3_client().upload_fileobj(
+            client = get_s3_client()
+            bucket = get_bucket_name()
+            print(f"S3 업로드 시도: bucket={bucket}, key={key}")
+            client.upload_fileobj(
                 Fileobj=file_obj,
-                Bucket=get_bucket_name(),
+                Bucket=bucket,
                 Key=key,
                 ExtraArgs={"ContentType": content_type}
             )
+            print(f"S3 업로드 성공: {key}")
             return True
         except ClientError as e:
             print(f"S3 업로드 에러: {e}")
+            return False
+        except Exception as e:
+            print(f"S3 업로드 일반 에러: {type(e).__name__}: {e}")
             return False
 
     @staticmethod
