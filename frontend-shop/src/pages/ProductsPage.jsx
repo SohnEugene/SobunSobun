@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../services/api';
+import { getProducts, createProduct, updateProduct, deleteProduct, uploadProductImage, getProductImageUrl } from '../services/api';
 import { formatPrice } from '../utils/formatters';
 import Button from '../components/Button';
 import styles from './ProductsPage.module.css';
@@ -16,6 +16,9 @@ function ProductsPage() {
     price: '',
     image_url: '',
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadProducts();
@@ -25,7 +28,23 @@ function ProductsPage() {
     try {
       setLoading(true);
       const data = await getProducts();
-      setProducts(data);
+
+      // Load presigned URLs for products with image_key
+      const productsWithImages = await Promise.all(
+        data.map(async (product) => {
+          if (product.image_key) {
+            try {
+              const { url } = await getProductImageUrl(product.pid);
+              return { ...product, image_url: url };
+            } catch {
+              return product;
+            }
+          }
+          return product;
+        })
+      );
+
+      setProducts(productsWithImages);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -42,6 +61,7 @@ function ProductsPage() {
         price: product.price,
         image_url: product.image_url || '',
       });
+      setImagePreview(product.image_url || null);
     } else {
       setEditingProduct(null);
       setFormData({
@@ -50,7 +70,9 @@ function ProductsPage() {
         price: '',
         image_url: '',
       });
+      setImagePreview(null);
     }
+    setImageFile(null);
     setShowModal(true);
   };
 
@@ -63,11 +85,26 @@ function ProductsPage() {
       price: '',
       image_url: '',
     });
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setUploading(true);
       const productData = {
         name: formData.name,
         description: formData.description,
@@ -75,16 +112,26 @@ function ProductsPage() {
         image_url: formData.image_url || '',
       };
 
+      let productId;
       if (editingProduct) {
         await updateProduct(editingProduct.pid, productData);
+        productId = editingProduct.pid;
       } else {
-        await createProduct(productData);
+        const result = await createProduct(productData);
+        productId = result.pid;
+      }
+
+      // Upload image if selected
+      if (imageFile && productId) {
+        await uploadProductImage(productId, imageFile);
       }
 
       handleCloseModal();
       loadProducts();
     } catch (err) {
       setError(err.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -187,19 +234,24 @@ function ProductsPage() {
                 />
               </div>
               <div className={styles.formGroup}>
-                <label>Image URL</label>
+                <label>Product Image</label>
                 <input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
                 />
+                {imagePreview && (
+                  <div className={styles.imagePreview}>
+                    <img src={imagePreview} alt="Preview" />
+                  </div>
+                )}
               </div>
               <div className={styles.modalActions}>
                 <Button type="button" variant="secondary" onClick={handleCloseModal}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  {editingProduct ? 'Save' : 'Add'}
+                <Button type="submit" disabled={uploading}>
+                  {uploading ? 'Uploading...' : editingProduct ? 'Save' : 'Add'}
                 </Button>
               </div>
             </form>

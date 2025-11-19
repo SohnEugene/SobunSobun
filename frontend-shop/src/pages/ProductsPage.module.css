@@ -151,3 +151,15 @@
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
 }
+
+.imagePreview {
+  margin-top: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.imagePreview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
