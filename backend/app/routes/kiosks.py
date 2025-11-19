@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, status
 from app.services.firebase import firebase_service
+from typing import List
 from app.models import (
     Kiosk,
     RegisterKioskRequest,
@@ -24,6 +25,17 @@ router = APIRouter(
     prefix="/kiosks",
     tags=["kiosk"]
 )
+
+@router.get("/", response_model=List[dict], status_code=status.HTTP_200_OK)
+async def get_all_kiosks():
+    """
+    Get all registered kiosks.
+
+    Returns:
+        List of kiosk objects with kiosk_id, name, location, status, products
+    """
+    kiosks = firebase_service.get_all_kiosks()
+    return kiosks
 
 @router.post("/", response_model=RegisterKioskResponse, status_code=status.HTTP_201_CREATED)
 async def register_kiosk(request: RegisterKioskRequest):
@@ -212,3 +224,60 @@ async def update_product_status(kid: str, pid: str, request: UpdateProductStatus
     return UpdateProductStatusResponse(
         message=f"Product {pid} marked as {status_text}"
     )
+
+@router.delete("/{kid}", status_code=status.HTTP_200_OK)
+async def delete_kiosk(kid: str):
+    """
+    Delete a kiosk by ID
+
+    Args:
+        kid: Kiosk ID
+
+    Returns:
+        Success message
+
+    Raises:
+        KioskNotFoundException: 404 if kiosk not found
+        KioskException: 500 for other errors
+    """
+    firebase_service.delete_kiosk(kid)
+    return {"message": f"Kiosk {kid} deleted successfully"}
+
+@router.delete("/{kid}/products/{pid}", status_code=status.HTTP_200_OK)
+async def remove_product_from_kiosk(kid: str, pid: str):
+    """
+    Remove a product from a kiosk
+
+    Args:
+        kid: Kiosk ID
+        pid: Product ID
+
+    Returns:
+        Success message
+
+    Raises:
+        KioskNotFoundException: 404 if kiosk not found
+        ProductNotAssignedException: 404 if product not assigned to kiosk
+    """
+    # 1. Get kiosk
+    kiosk = firebase_service.get_kiosk_by_id(kid)
+
+    # 2. Find and remove product from kiosk's product list
+    product_found = False
+    updated_products = []
+
+    for kiosk_prod in kiosk.products:
+        prod_id = kiosk_prod.get('pid')
+        if prod_id == pid:
+            product_found = True
+        else:
+            updated_products.append(kiosk_prod)
+
+    # 3. Check if product was found
+    if not product_found:
+        raise ProductNotAssignedException(pid=pid, kid=kid)
+
+    # 4. Update kiosk's products list
+    firebase_service.update_kiosk(kid, {"products": updated_products})
+
+    return {"message": f"Product {pid} removed from kiosk {kid}"}

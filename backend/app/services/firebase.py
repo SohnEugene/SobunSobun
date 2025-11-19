@@ -160,6 +160,26 @@ class FirebaseService:
         except Exception as e:
             raise KioskException(f"Failed to update kiosk {kid}: {str(e)}") from e
 
+    def delete_kiosk(self, kid: str) -> None:
+        """Delete a kiosk by ID"""
+        # 1. Get document reference
+        doc_ref = self.db.collection('kiosks').document(kid)
+
+        # 2. Check if kiosk exists
+        try:
+            doc = doc_ref.get()
+        except Exception as e:
+            raise KioskException(f"Failed to check kiosk {kid}: {str(e)}") from e
+
+        if not doc.exists:
+            raise KioskNotFoundException(kid=kid)
+
+        # 3. Delete kiosk
+        try:
+            doc_ref.delete()
+        except Exception as e:
+            raise KioskException(f"Failed to delete kiosk {kid}: {str(e)}") from e
+
     def get_all_kiosks(self) -> List[Dict[str, Any]]:
         """Get all kiosks from Firebase"""
         try:
@@ -174,8 +194,7 @@ class FirebaseService:
 
             return kiosks
         except Exception as e:
-            print(f"Error getting kiosks: {e}")
-            return []
+            raise KioskException(f"Failed to get all kiosks: {str(e)}") from e
 
 
 
@@ -267,6 +286,26 @@ class FirebaseService:
         except Exception as e:
             raise ProductException(f"Failed to update product {product_id}: {str(e)}") from e
 
+    def delete_product(self, product_id: str) -> None:
+        """Delete a product by ID"""
+        # 1. Get document reference
+        doc_ref = self.db.collection('products').document(product_id)
+
+        # 2. Check if product exists
+        try:
+            doc = doc_ref.get()
+        except Exception as e:
+            raise ProductException(f"Failed to check product {product_id}: {str(e)}") from e
+
+        if not doc.exists:
+            raise ProductNotFoundException(pid=product_id)
+
+        # 3. Delete product
+        try:
+            doc_ref.delete()
+        except Exception as e:
+            raise ProductException(f"Failed to delete product {product_id}: {str(e)}") from e
+
 
 
     # Transaction operations -------------------------------------------------
@@ -322,7 +361,7 @@ class FirebaseService:
     def get_all_transactions(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
         """Get all transactions from Firebase"""
         try:
-            transactions_ref = self.db.collection('transactions').order_by('timestamp', direction=firestore.Query.DESCENDING)
+            transactions_ref = self.db.collection('transactions').order_by('created_at', direction=firestore.Query.DESCENDING)
 
             if limit:
                 transactions_ref = transactions_ref.limit(limit)
@@ -337,8 +376,7 @@ class FirebaseService:
 
             return transactions
         except Exception as e:
-            print(f"Error getting transactions: {e}")
-            return []
+            raise PaymentException(f"Failed to get all transactions: {str(e)}") from e
 
     def get_transaction_by_id(self, txid: str) -> Optional[Payment]:
         """Get a specific transaction/payment by txid and return as Payment model"""
@@ -369,7 +407,7 @@ class FirebaseService:
     def get_transactions_by_kiosk(self, kiosk_id: str) -> List[Dict[str, Any]]:
         """Get all transactions for a specific kiosk"""
         try:
-            transactions_ref = self.db.collection('transactions').where('kiosk_id', '==', kiosk_id).order_by('timestamp', direction=firestore.Query.DESCENDING)
+            transactions_ref = self.db.collection('transactions').where('kid', '==', kiosk_id).order_by('created_at', direction=firestore.Query.DESCENDING)
             docs = transactions_ref.stream()
 
             transactions = []
@@ -380,8 +418,7 @@ class FirebaseService:
 
             return transactions
         except Exception as e:
-            print(f"Error getting transactions for kiosk {kiosk_id}: {e}")
-            return []
+            raise PaymentException(f"Failed to get transactions for kiosk {kiosk_id}: {str(e)}") from e
 
 
 # Global Firebase service instance

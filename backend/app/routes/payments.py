@@ -1,5 +1,6 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Query
 from fastapi.responses import StreamingResponse
+from typing import List, Optional
 from app.models import (
     Payment,
     PaymentRequest,
@@ -25,6 +26,28 @@ router = APIRouter(
     prefix="/payments",
     tags=["payments"]
 )
+
+
+@router.get("/transactions", response_model=List[dict], status_code=status.HTTP_200_OK)
+async def get_transactions(
+    kiosk_id: Optional[str] = Query(None, description="Filter by kiosk ID"),
+    limit: Optional[int] = Query(None, description="Limit number of results")
+):
+    """
+    Get all transactions with optional filters.
+
+    Args:
+        kiosk_id: Optional kiosk ID to filter transactions
+        limit: Optional limit on number of results
+
+    Returns:
+        List of transaction objects
+    """
+    if kiosk_id:
+        transactions = firebase_service.get_transactions_by_kiosk(kiosk_id)
+    else:
+        transactions = firebase_service.get_all_transactions(limit=limit)
+    return transactions
 
 
 @router.post("/", response_model=PaymentResponse, status_code=status.HTTP_200_OK)

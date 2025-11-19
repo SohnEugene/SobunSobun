@@ -80,3 +80,41 @@ async def get_product_by_id(pid: str):
     """
     product = firebase_service.get_product_by_id(pid)
     return product
+
+@router.put("/{pid}", status_code=status.HTTP_200_OK)
+async def update_product(pid: str, product_request: RegisterProductRequest):
+    """
+    Update a product by ID
+
+    Args:
+        pid: Product ID (e.g., "prod_001")
+        product_request: Updated product data
+
+    Returns:
+        Success message
+
+    Raises:
+        ProductNotFoundException: 404 if product not found
+        ProductException: 500 for other errors
+    """
+    product_data = product_request.model_dump()
+    firebase_service.update_product(pid, product_data)
+    return {"message": f"Product {pid} updated successfully"}
+
+@router.delete("/{pid}", status_code=status.HTTP_200_OK)
+async def delete_product(pid: str):
+    """
+    Delete a product by ID
+
+    Args:
+        pid: Product ID (e.g., "prod_001")
+
+    Returns:
+        Success message
+
+    Raises:
+        ProductNotFoundException: 404 if product not found
+        ProductException: 500 for other errors
+    """
+    firebase_service.delete_product(pid)
+    return {"message": f"Product {pid} deleted successfully"}
