@@ -20,7 +20,6 @@ from app.exceptions import (
     PaymentNotFoundException
 )
 from app.models import Kiosk, Product, Payment
-from app.services.s3 import S3Service
 
 
 class FirebaseService:
@@ -230,6 +229,8 @@ class FirebaseService:
     
     def get_all_products(self) -> List[Product]:
         """Get all products from Firebase with presigned URLs"""
+        from app.services.s3 import S3Service
+
         try:
             products_ref = self.db.collection('products')
             docs = products_ref.stream()
@@ -253,6 +254,8 @@ class FirebaseService:
 
     def get_product_by_id(self, pid: str) -> Product:
         """Get a specific product by ID with presigned URL"""
+        from app.services.s3 import S3Service
+
         # 1. Get document reference and fetch
         doc_ref = self.db.collection('products').document(pid)
 
