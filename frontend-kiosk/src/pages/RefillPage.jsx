@@ -44,6 +44,17 @@ export default function RefillStartPage({ onNext, onReset }) {
     console.log("📦 SessionContext:", session);
   }, [step, session]);
 
+  useEffect(() => {
+  if (step === REFILL_STEPS.WELCOME) {
+    const timer = setTimeout(() => {
+      handleWelcomeNext();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }
+  }, [step]);
+
+
   // 시작 화면에서 다음 단계로 (저울 연결 상태 확인)
   const handleWelcomeNext = () => {
     if (isConnected) {
@@ -136,7 +147,7 @@ export default function RefillStartPage({ onNext, onReset }) {
   // ===================== 렌더링 =====================
   if (step === REFILL_STEPS.WELCOME) {
     return (
-      <div className="kiosk-page-primary" onClick={handleWelcomeNext} style={{ cursor: 'pointer' }}>
+      <div className="kiosk-page-primary" style={{ cursor: 'default' }}>
         <div className="kiosk-content-center">
           <h1 className="kiosk-title-main-light">
             지금부터
@@ -147,13 +158,12 @@ export default function RefillStartPage({ onNext, onReset }) {
       </div>
     );
   }
-
   if (step === REFILL_STEPS.CONNECT_SCALE) {
     return (
       <div className="kiosk-page-primary">
         <div className="kiosk-header-light">
           <button className="kiosk-back-button" onClick={handleBackToHome}>
-            ← 초기 화면
+            처음 화면으로
           </button>
         </div>
         <div className="kiosk-content-center">
@@ -195,7 +205,7 @@ export default function RefillStartPage({ onNext, onReset }) {
     <div className="kiosk-page-primary">
       <div className="kiosk-header-light">
         <button className="kiosk-back-button" onClick={handleBackToHome}>
-          ← 초기 화면
+          처음 화면으로
         </button>
       </div>
 

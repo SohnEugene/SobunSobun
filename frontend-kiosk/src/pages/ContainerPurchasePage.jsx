@@ -23,29 +23,28 @@ export default function ContainerPurchasePage({ onYes, onNo, onHome }) {
   };
 
   return (
-    <div className={styles.containerPurchaseContainer}>
-      <div className={styles.containerPurchaseHeader}>
+    <div className="kiosk-page">
+      <div className="kiosk-header">
         <button
           type="button"
-          className={styles.headerHomeButton}
+          className="kiosk-home-button"
           onClick={handleHomeClick}
         >
-          home
+          처음 화면으로
         </button>
       </div>
-      <div className={styles.containerPurchaseContent}>
-        <img src="bottles.png" alt="" />
+      <div className="kiosk-content">
+        <img className="bottle-image"src="bottles.png" alt="" />
 
-        <div className={styles.containerPurchaseText}>
-          미니리필 전용 다회용기
-          <span className={styles.purchaseTextDetail}> 500원</span>
+        <div className="kiosk-title">
+          리필 전용 다회용기를
           <br />
-          장바구니에 추가하시겠어요?
+          추가하시겠어요?
         </div>
 
-        <div className={styles.containerPurchaseButtons}>
+        <div className="kiosk-button-container">
           <Button variant="double" onClick={handlePurchase}>
-            추가하기
+            추가하기 (500원)
           </Button>
 
           <Button onClick={handleSkip} variant="outlinedDouble">

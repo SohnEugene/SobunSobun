@@ -77,7 +77,7 @@ export default function ProductSelectionPage({ onNext, onHome }) {
         className="kiosk-home-button"
         onClick={handleHomeClick}
       >
-        home
+        처음 화면으로
       </button>
     </div>
   );
@@ -126,24 +126,21 @@ export default function ProductSelectionPage({ onNext, onHome }) {
   // 로딩 중
   if (isLoading) {
     return renderStateMessage(
-      "⏳",
       "제품을 불러오는 중입니다",
-      "지갑은 가볍게, 환경은 푸르게!",
-      "loading"
     );
   }
 
   // 에러 발생
   if (error) {
-    return renderStateMessage("⚠️", "제품을 불러올 수 없습니다", error);
+    return renderStateMessage(
+      "제품을 불러올 수 없습니다. 관리자에게 문의해주세요."
+    );
   }
 
   // 제품이 없는 경우
   if (products.length === 0) {
     return renderStateMessage(
-      "📦",
-      "등록된 제품이 없습니다",
-      "관리자에게 문의해주세요"
+      "등록된 제품이 없습니다. 관리자에게 문의해주세요.",
     );
   }
 
@@ -151,10 +148,9 @@ export default function ProductSelectionPage({ onNext, onHome }) {
     <div className="kiosk-page">
       {renderHeader()}
       <div className="kiosk-content">
-        <h1 className="kiosk-title">어떤 제품을 리필하시겠어요?</h1>
-
-        <div className="kiosk-subtitle">1g당 가격이 표시됩니다</div>
-
+        <div className="kiosk-content-header">
+          <h1 className="kiosk-title">리필할 제품을 선택해주세요.</h1>
+        </div>
         <div className={styles.productSelectionProducts}>
           {products.map((product) => {
             const resolvedImage = resolveProductImage(product);

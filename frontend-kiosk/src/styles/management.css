@@ -461,12 +461,12 @@
 }
 
 @media (max-width: 768px) {
-  .home-actions-grid {
-    grid-template-columns: 1fr;
+  .bluetooth-status {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .manager-grid,
-  .product-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  .product-panel-grid {
+    grid-template-columns: 1fr;
   }
 }

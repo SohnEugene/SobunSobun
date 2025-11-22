@@ -15,17 +15,12 @@ export default function ProductCard({ product, isSelected, onSelect }) {
         className="productCardImage"
       />
       <div className="productCardInfo">
-        <div className="productCardBrand">{product.brand || ""}</div>
-        <div className="productCardName">{product.name}</div>
-        <div className="productCardBrand">{product.detail}</div>
-      </div>
-      <div className="productCardPriceContainer">
-        {product.originalPrice && (
-          <span className="productCardOriginalPrice">
-            {product.originalPrice}
-          </span>
-        )}
-        <span className="productCardPrice">₩{product.price} /g</span>
+        <div className="productCardHeader">
+          <div className="productCardName">{product.name}</div>
+          <div className="productCardPrice">₩{product.price} /g</div>
+        </div>
+        <div className="productCardDetail">{product.description}</div>
+        <div className="productCardCompare"></div>
       </div>
     </div>
   );

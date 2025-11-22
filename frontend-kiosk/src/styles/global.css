@@ -265,11 +265,19 @@ html {
 
 /* 컨텐츠 */
 .kiosk-content {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  padding: var(--spacing-2xl) var(--spacing-xl);
+  flex-direction: column; /* 위→아래 정렬 */
+  align-items: center; /* 가로 중앙 정렬 */
+  height: 100%; /* 부모 높이에 맞추기 */
+  flex: 1;
+  padding: 48px;
   overflow-y: auto;
+  gap: 32px;
+  justify-content: space-between
+}
+
+.kiosk-content-header {
+  gap: 8px;
 }
 
 .kiosk-content-card {
@@ -368,11 +376,12 @@ html {
 
 /* 버튼 */
 .kiosk-button-container {
-  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-md);
+  flex-direction: column; /* 버튼들을 위→아래 */
+  gap: 16px; /* 버튼 간 간격 */
+  justify-content: center; /* 세로 중앙 정렬 */
+  align-items: center; /* 가로 중앙 정렬 */
+  padding-bottom: 100px;
 }
 
 .kiosk-back-button {
@@ -489,28 +498,12 @@ html {
   background-color: var(--color-primary);
   color: var(--color-white);
   border: none;
-  height: 8.5vh;
-  min-height: 70px;
-  font-size: clamp(28px, 4.5vw, 40px);
 }
 
 .buttonOutlinedDouble {
-  background-color: transparent;
+  background-color: var(--color-white);
   color: var(--color-primary);
   border: 3px solid var(--color-primary);
-  height: 8.5vh;
-  min-height: 70px;
-  font-size: clamp(28px, 4.5vw, 40px);
-}
-
-.buttonDouble:hover:not(:disabled) {
-  opacity: 0.9;
-  transform: translateY(-2px);
-}
-
-.buttonOutlinedDouble:hover:not(:disabled) {
-  background-color: var(--color-primary);
-  color: var(--color-white);
 }
 
 .buttonSmall {
@@ -528,73 +521,61 @@ html {
 
 .productCard {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  padding: var(--spacing-md);
-  border: 3px solid var(--color-gray);
-  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 2px solid var(--color-gray-light);
+  border-radius: 16px;
   background-color: var(--color-white);
   cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: var(--spacing-md);
-  height: 15.5vh;
-  min-height: 120px;
-}
-
-.productCard:hover {
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  height: 220px;
 }
 
 .productCardSelected {
   border-color: var(--color-primary);
-  background-color: rgba(237, 108, 82, 0.1);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--color-primary-light);
 }
 
 .productCardImage {
-  width: 160px;
-  height: 160px;
+  height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: var(--radius-md);
-  margin-right: var(--spacing-md);
-  background-color: var(--color-gray-100);
-  flex-shrink: 0;
-  border: 2px solid var(--color-gray);
+  border-radius: 16px;
+  margin-right: 24px;
 }
 
 .productCardInfo {
   flex: 1;
-  min-width: 0;
+  height: 100%;
 }
 
-.productCardBrand {
-  font-size: var(--font-size-2xl);
-  color: var(--color-gray-600);
-  margin-bottom: 4px;
+.productCardHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .productCardName {
-  font-size: var(--font-size-4xl);
+  flex: 7;
+  font-size:32px;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--spacing-sm);
-}
-
-.productCardPriceContainer {
-  text-align: right;
-  flex-shrink: 0;
-}
-
-.productCardOriginalPrice {
-  display: none;
-  font-size: var(--font-size-2xl);
-  color: var(--color-gray-400);
-  text-decoration: line-through;
-  margin-right: var(--spacing-sm);
 }
 
 .productCardPrice {
-  font-size: var(--font-size-4xl);
+  flex: 3;
+  text-align: right;
+  font-size: 32px;
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
+}
+
+.productCardDetail {
+  font-size: 20px;
+  color: var(--color-gray-dark);
+}
+
+.bottle-image {
+  width: 60vw;
 }
