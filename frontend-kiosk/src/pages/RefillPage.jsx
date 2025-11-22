@@ -136,11 +136,13 @@ export default function RefillStartPage({ onNext, onReset }) {
   // ===================== 렌더링 =====================
   if (step === REFILL_STEPS.WELCOME) {
     return (
-      <div className={styles.refillStartContainer} onClick={handleWelcomeNext}>
-        <div className={styles.refillStartMainText}>
-          지금부터
-          <br />
-          리필을 시작할게요
+      <div className="kiosk-page-primary" onClick={handleWelcomeNext} style={{ cursor: 'pointer' }}>
+        <div className="kiosk-content-center">
+          <h1 className="kiosk-title-main-light">
+            지금부터
+            <br />
+            리필을 시작할게요
+          </h1>
         </div>
       </div>
     );
@@ -148,24 +150,21 @@ export default function RefillStartPage({ onNext, onReset }) {
 
   if (step === REFILL_STEPS.CONNECT_SCALE) {
     return (
-      <div className={styles.refillContainer}>
-        <div className={styles.refillHeader}>
-          <button
-            className={styles.refillBackButton}
-            onClick={handleBackToHome}
-          >
+      <div className="kiosk-page-primary">
+        <div className="kiosk-header-light">
+          <button className="kiosk-back-button" onClick={handleBackToHome}>
             ← 초기 화면
           </button>
         </div>
-        <div className={styles.refillContent}>
-          <div className={styles.refillMainText}>저울과 연결해주세요</div>
+        <div className="kiosk-content-center">
+          <h1 className="kiosk-title-light">저울과 연결해주세요</h1>
           {error && (
-            <div className={styles.refillSubText} style={{ color: "red" }}>
+            <div className="kiosk-subtitle-light" style={{ color: "#ffcccc" }}>
               ⚠️ {error}
             </div>
           )}
           {deviceName && (
-            <div className={styles.refillSubText}>연결됨: {deviceName}</div>
+            <div className="kiosk-subtitle-light">연결됨: {deviceName}</div>
           )}
           <img className={styles.refillIcon} src="scale.png" alt="저울" />
           <Button
@@ -183,7 +182,7 @@ export default function RefillStartPage({ onNext, onReset }) {
           <Button
             variant="small"
             onClick={handleDebugSkipBluetooth}
-            style={{ marginTop: '10px', backgroundColor: '#ff9800' }}
+            style={{ marginTop: "10px", backgroundColor: "#ff9800" }}
           >
             [DEBUG] 연결 건너뛰기
           </Button>
@@ -193,25 +192,25 @@ export default function RefillStartPage({ onNext, onReset }) {
   }
 
   return (
-    <div className={styles.refillContainer}>
-      <div className={styles.refillHeader}>
-        <button className={styles.refillBackButton} onClick={handleBackToHome}>
+    <div className="kiosk-page-primary">
+      <div className="kiosk-header-light">
+        <button className="kiosk-back-button" onClick={handleBackToHome}>
           ← 초기 화면
         </button>
       </div>
 
-      <div className={styles.refillContent}>
+      <div className="kiosk-content-center">
         {step === REFILL_STEPS.EMPTY_CONTAINER && (
           <>
-            <div className={styles.refillMainText}>
+            <h1 className="kiosk-title-light">
               빈 병을
               <br />
               저울에 올려주세요
-            </div>
-            <div className={styles.refillSubText}>
+            </h1>
+            <div className="kiosk-subtitle-light">
               빈 병의 무게를 먼저 잴게요
             </div>
-            <div className={styles.refillSubText}>
+            <div className="kiosk-hint">
               저울의 영점이 맞춰져 있는지 꼭 확인!
             </div>
             <div className={styles.refillIcon}>⚖️</div>
@@ -225,7 +224,7 @@ export default function RefillStartPage({ onNext, onReset }) {
             <Button
               variant="small"
               onClick={handleDebugSkipTare}
-              style={{ marginTop: '10px', backgroundColor: '#ff9800' }}
+              style={{ marginTop: "10px", backgroundColor: "#ff9800" }}
             >
               [DEBUG] 50g으로 건너뛰기
             </Button>
@@ -234,12 +233,12 @@ export default function RefillStartPage({ onNext, onReset }) {
 
         {step === REFILL_STEPS.TARE_WEIGHT && (
           <>
-            <div className={styles.refillMainText}>
+            <h1 className="kiosk-title-light">
               병의 무게는
               <br />
               {session.bottleWeight}g이네요!
-            </div>
-            <div className={styles.refillSubText}>이 값은 빼고 계산할게요</div>
+            </h1>
+            <div className="kiosk-subtitle-light">이 값은 빼고 계산할게요</div>
             <div className={styles.refillIconWithBottle}>
               <div className={styles.refillBottle}>🧴</div>
               <div className={styles.refillScale}>⚖️</div>
@@ -249,11 +248,11 @@ export default function RefillStartPage({ onNext, onReset }) {
 
         {step === REFILL_STEPS.FILL_PRODUCT && (
           <>
-            <div className={styles.refillMainText}>
+            <h1 className="kiosk-title-light">
               이제 제품을 리필하시고
               <br />
               병을 다시 올려주세요
-            </div>
+            </h1>
             <div className={styles.refillIconWithBottle}>
               <div className={styles.refillBottle}>🧴</div>
               <div className={styles.refillScale}>⚖️</div>
@@ -268,7 +267,7 @@ export default function RefillStartPage({ onNext, onReset }) {
             <Button
               variant="small"
               onClick={handleDebugSkipFill}
-              style={{ marginTop: '10px', backgroundColor: '#ff9800' }}
+              style={{ marginTop: "10px", backgroundColor: "#ff9800" }}
             >
               [DEBUG] 100g으로 건너뛰기
             </Button>
@@ -277,7 +276,7 @@ export default function RefillStartPage({ onNext, onReset }) {
 
         {step === REFILL_STEPS.MEASURING && (
           <>
-            <div className={styles.refillMainText}>무게 인식 중...</div>
+            <h1 className="kiosk-title-light">무게 인식 중...</h1>
             <div className={styles.refillIconWithBottle}>
               <div className={styles.refillBottle}>🧴</div>
               <div className={styles.refillScale}>⚖️</div>

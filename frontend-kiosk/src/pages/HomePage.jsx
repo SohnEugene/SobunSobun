@@ -1,5 +1,6 @@
 import Button from "../components/Button";
 import styles from "../styles/pages.module.css";
+import coverImage from "../assets/images/cover.png";
 
 export default function HomePage({ onNext }) {
   return (
@@ -12,7 +13,7 @@ export default function HomePage({ onNext }) {
         </div>
       </div>
       <div className={styles.homeContent}>
-        <img src="ad_image.png" alt="광고 이미지" />
+        <img src={coverImage} alt="Cover" />
       </div>
       <div className={styles.homeFooter}>
         <Button onClick={onNext}>리필 시작</Button>

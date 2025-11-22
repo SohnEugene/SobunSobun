@@ -1,11 +1,8 @@
 // src/components/ProductCard.jsx
-import styles from "../styles/components.module.css";
-
 export default function ProductCard({ product, isSelected, onSelect }) {
-  // CSS 모듈 클래스 조합
   const cardClassName = [
-    styles.productCard,
-    isSelected ? styles.productCardSelected : "",
+    "productCard",
+    isSelected ? "productCardSelected" : "",
   ]
     .join(" ")
     .trim();
@@ -15,20 +12,20 @@ export default function ProductCard({ product, isSelected, onSelect }) {
       <img
         src={product.image_url || product.image || "/default-product.png"}
         alt={product.name}
-        className={styles.productCardImage}
+        className="productCardImage"
       />
-      <div className={styles.productCardInfo}>
-        <div className={styles.productCardBrand}>{product.brand || ""}</div>
-        <div className={styles.productCardName}>{product.name}</div>
-        <div className={styles.productCardBrand}>{product.detail}</div>
+      <div className="productCardInfo">
+        <div className="productCardBrand">{product.brand || ""}</div>
+        <div className="productCardName">{product.name}</div>
+        <div className="productCardBrand">{product.detail}</div>
       </div>
-      <div className={styles.productCardPriceContainer}>
+      <div className="productCardPriceContainer">
         {product.originalPrice && (
-          <span className={styles.productCardOriginalPrice}>
+          <span className="productCardOriginalPrice">
             {product.originalPrice}
           </span>
         )}
-        <span className={styles.productCardPrice}>₩{product.price} /g</span>
+        <span className="productCardPrice">₩{product.price} /g</span>
       </div>
     </div>
   );

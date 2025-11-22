@@ -27,34 +27,36 @@ export default function ContainerCheckPage({
   };
 
   return (
-    <div className={styles.containerCheckContainer}>
-      <div className={styles.containerCheckHeader}>
+    <div className="kiosk-page">
+      <div className="kiosk-header">
         <button
           type="button"
-          className={styles.headerHomeButton}
+          className="kiosk-home-button"
           onClick={handleHomeClick}
         >
           home
         </button>
       </div>
-      <div className={styles.containerCheckContent}>
-        <div className={styles.containerCheckQuestionDetail}>
-          리필을 위해서는 빈 용기가 필요해요
-        </div>
-        <div className={styles.containerCheckQuestion}>
-          상품을 담을 용기를 가지고 계신가요?
-        </div>
+      <div className="kiosk-content">
+        <div className="kiosk-content-center">
+          <div className="kiosk-text-semibold">
+            리필을 위해서는 빈 용기가 필요해요
+          </div>
+          <h1 className="kiosk-title" style={{ marginBottom: '64px' }}>
+            상품을 담을 용기를 가지고 계신가요?
+          </h1>
 
-        <div className={styles.containerCheckIcon}>🤔</div>
+          <div className={styles.containerCheckIcon}>🤔</div>
 
-        <div className={styles.containerCheckButtons}>
-          <Button variant="double" onClick={handleNo}>
-            아니요, 용기가 없어요
-          </Button>
+          <div className="kiosk-button-container">
+            <Button variant="double" onClick={handleNo}>
+              아니요, 용기가 없어요
+            </Button>
 
-          <Button onClick={handleYes} variant="outlinedDouble">
-            네, 용기를 가져왔어요
-          </Button>
+            <Button onClick={handleYes} variant="outlinedDouble">
+              네, 용기를 가져왔어요
+            </Button>
+          </div>
         </div>
       </div>
     </div>

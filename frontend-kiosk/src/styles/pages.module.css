@@ -1,130 +1,69 @@
 /**
  * Pages Module CSS
- * 모든 페이지 컴포넌트의 스타일을 정의합니다.
- *
- * 네이밍 규칙: {pageName}{ElementName}
- * 예: homeContainer, productSelectionHeader
+ * 페이지별 고유 스타일만 정의합니다.
+ * 공통 레이아웃/타이틀/버튼은 global.css의 kiosk-* 클래스를 사용하세요.
  */
 
 /* ============================================================
-   HomePage Styles
+   HomePage
    ============================================================ */
 
 .homeContainer {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
   background-color: var(--color-white);
 }
 
 .homeHeader {
-  flex: 1.5;
+  flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
-}
-
-.homeContent {
-  flex: 12;
-  background-size: contain;
-  background-color: var(--color-gray);
-}
-
-.homeContent img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.homeFooter {
-  flex: 2;
-  padding: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: var(--spacing-lg);
 }
 
 .homeLogo {
   display: flex;
   align-items: center;
-  justify-content: start;
   gap: var(--spacing-lg);
-  width: 100%;
-  height: 100%;
-  margin: 0;
   font-size: 32px;
-  font-weight: var(font-weight-normal);
-  position: relative;
-  left: 30px;
+  padding-left: 30px;
 }
 
 .logo1 {
   width: 200px;
+  height: auto;
 }
 
 .logo2 {
   height: 60px;
-  opacity: 0.85;
+  width: auto;
 }
 
-.headerHomeButton {
-  background: none;
-  border: none;
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-  padding: 0;
-  text-transform: uppercase;
-  opacity: 0.15;
+.homeContent {
+  flex: 11;
+  display: flex;
+  overflow: hidden;
+}
+
+.homeContent img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.homeFooter {
+  flex: 2;
+  padding: var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ============================================================
-   ProductSelectionPage Styles
+   ProductSelectionPage
    ============================================================ */
-
-.productSelectionContainer {
-  min-height: 100vh;
-  background-color: var(--color-gray-600);
-  display: flex;
-  flex-direction: column;
-}
-
-.productSelectionHeader {
-  padding: var(--spacing-xl);
-  color: var(--color-gray-400);
-  font-size: var(--font-size-lg);
-}
-
-.productSelectionContent {
-  flex: 1;
-  background-color: var(--color-white);
-  margin: 0 var(--spacing-lg);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: var(--spacing-xl) var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-}
-
-.productSelectionFooter {
-  padding: var(--spacing-lg) 0;
-  display: flex;
-  justify-content: center;
-}
-
-.productSelectionTitle {
-  font-size: 56px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--spacing-sm);
-  text-align: center;
-}
-
-.productSelectionSubtitle {
-  font-size: var(--font-size-4xl);
-  opacity: 50%;
-  margin-bottom: var(--spacing-xl);
-  text-align: center;
-}
 
 .productSelectionProducts {
   flex: 1;
@@ -132,93 +71,9 @@
   margin-bottom: var(--spacing-lg);
 }
 
-.productSelectionState {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xl);
-}
-
-.productSelectionStateCard {
-  width: 100%;
-  max-width: 520px;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-xl);
-  background-color: rgba(255, 123, 97, 0.2); /* --color-primary-light @ 20% */
-  box-shadow: 0 24px 45px rgba(0, 0, 0, 0.08);
-  text-align: center;
-}
-
-.productSelectionStateCardLoading {
-  background-color: #fff;
-  box-shadow: none;
-}
-
-.productSelectionStateIcon {
-  font-size: 72px;
-  margin-bottom: var(--spacing-lg);
-}
-
-.productSelectionStateTitle {
-  font-size: calc(var(--font-size-4xl) * 1.2);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--spacing-md);
-}
-
-.productSelectionStateDescription {
-  font-size: calc(var(--font-size-2xl) * 1.2);
-  color: var(--color-gray-500);
-  line-height: 1.5;
-}
-
 /* ============================================================
-   ContainerCheckPage Styles
+   ContainerCheckPage
    ============================================================ */
-
-.containerCheckContainer {
-  min-height: 100vh;
-  background-color: var(--color-gray-600);
-  display: flex;
-  flex-direction: column;
-}
-
-.containerCheckHeader {
-  padding: var(--spacing-lg);
-  color: var(--color-gray-400);
-  font-size: var(--font-size-lg);
-}
-
-.containerCheckContent {
-  flex: 1;
-  background-color: var(--color-white);
-  margin: 0 var(--spacing-lg);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.containerCheckQuestionDetail {
-  font-size: 40px;
-  font-weight: var(--font-weight-semibold);
-  opacity: 60%;
-  text-align: center;
-  line-height: 1.5;
-  margin-bottom: 24px;
-}
-
-.containerCheckQuestion {
-  font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
-  text-align: center;
-  line-height: 1.5;
-  margin-bottom: 64px;
-}
 
 .containerCheckIcon {
   font-size: 120px;
@@ -226,75 +81,8 @@
   margin-bottom: 320px;
 }
 
-.containerCheckButtons {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
 /* ============================================================
-   ContainerPurchaseModal Styles
-   ============================================================ */
-
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal {
-  background-color: var(--color-white);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl);
-  max-width: 500px;
-  width: 90%;
-  position: relative;
-}
-
-.modalCloseButton {
-  position: absolute;
-  top: var(--spacing-lg);
-  right: var(--spacing-lg);
-  background: none;
-  border: none;
-  font-size: 28px;
-  cursor: pointer;
-  color: var(--color-gray-500);
-}
-
-.modalImageContainer {
-  width: 100%;
-  height: 250px;
-  background-color: var(--color-gray-300);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-lg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 80px;
-}
-
-.modalText {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-gray-900);
-  text-align: center;
-  line-height: 1.6;
-  margin-bottom: var(--spacing-lg);
-}
-
-/* ============================================================
-   ContainerPurchasePage Styles
+   ContainerPurchasePage
    ============================================================ */
 
 .containerPurchaseContainer {
@@ -323,19 +111,6 @@
   gap: var(--spacing-xl);
 }
 
-.containerPurchaseImageContainer {
-  width: 100%;
-  max-width: 400px;
-  height: 250px;
-  background-color: var(--color-gray-300);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-xl);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 120px;
-}
-
 .containerPurchaseText {
   font-size: var(--font-size-5xl);
   font-weight: var(--font-weight-bold);
@@ -361,143 +136,20 @@
   opacity: 60%;
 }
 
-/* ============================================================
-   RefillStartPage Styles (Welcome Screen)
-   ============================================================ */
-
-.refillStartContainer {
-  min-height: 100vh;
-  background-color: var(--color-primary);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  cursor: pointer;
-}
-
-.refillStartHeader {
-  position: absolute;
-  top: var(--spacing-lg);
-  left: var(--spacing-lg);
-  color: var(--color-white);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-}
-
-.refillStartMainText {
-  font-size: 56px;
-  font-weight: var(--font-weight-extrabold);
-  color: var(--color-white);
-  text-align: center;
-  line-height: 1.3;
-  margin-bottom: var(--spacing-lg);
-}
-
-.refillStartSubText {
-  font-size: var(--font-size-2xl);
-  color: var(--color-white);
-  text-align: center;
-}
-
-/* ============================================================
-   RefillPage Styles (Main Refill Process)
-   ============================================================ */
-
-.refillContainer {
-  min-height: 100vh;
-  background-color: var(--color-primary);
-  display: flex;
-  flex-direction: column;
-}
-
-.refillHeader {
-  padding: var(--spacing-lg);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.refillBackButton {
+.headerHomeButton {
   background: none;
   border: none;
-  color: var(--color-white);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font: inherit;
+  color: inherit;
   cursor: pointer;
-  padding: var(--spacing-sm) var(--spacing-md);
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  text-transform: uppercase;
+  opacity: 0.15;
 }
 
-.refillBackButton:hover {
-  opacity: 0.8;
-}
-
-.refillBackButton:active {
-  opacity: 0.6;
-}
-
-/* Mock 개발 도구 */
-.mockControls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  background-color: rgba(0, 0, 0, 0.3);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-}
-
-.mockLabel {
-  color: var(--color-white);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-}
-
-.mockButton {
-  background-color: var(--color-white);
-  color: var(--color-primary);
-  border: none;
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.mockButton:hover {
-  opacity: 0.9;
-}
-
-.refillContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: var(--spacing-2xl) var(--spacing-xl);
-  text-align: center;
-}
-
-.refillMainText {
-  font-size: 48px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-white);
-  text-align: center;
-  line-height: 1.3;
-  margin-bottom: var(--spacing-lg);
-}
-
-.refillSubText {
-  font-size: var(--font-size-xl);
-  color: var(--color-white);
-  opacity: 0.9;
-  margin-bottom: var(--spacing-2xl);
-}
+/* ============================================================
+   RefillPage
+   ============================================================ */
 
 .refillIcon {
   height: 25vh;
@@ -531,7 +183,6 @@
   font-size: 120px;
 }
 
-/* 가격 표시 */
 .refillPrice {
   margin-bottom: var(--spacing-2xl);
 }
@@ -561,27 +212,9 @@
   margin-bottom: var(--spacing-xl);
 }
 
-.refillHint {
-  margin-top: var(--spacing-lg);
-  font-size: var(--font-size-base);
-  color: var(--color-white);
-  opacity: 0.7;
-}
-
 /* ============================================================
-   PaymentMethodPage Styles
+   PaymentMethodPage
    ============================================================ */
-
-.paymentMethodContainer {
-  min-height: 100vh;
-  background-color: var(--color-white);
-  display: flex;
-  flex-direction: column;
-}
-
-.paymentMethodHeader {
-  padding: var(--spacing-lg);
-}
 
 .paymentMethodBackButton {
   background: none;
@@ -594,20 +227,6 @@
 
 .paymentMethodBackButton:hover {
   opacity: 0.7;
-}
-
-.paymentMethodContent {
-  flex: 1;
-  padding: var(--spacing-xl);
-  display: flex;
-  flex-direction: column;
-}
-
-.paymentMethodTitle {
-  font-size: 48px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
-  margin-bottom: var(--spacing-2xl);
 }
 
 .paymentMethodOptions {
@@ -641,11 +260,6 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   border-color: var(--color-gray-400);
-}
-
-.paymentMethodButton:active {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
 .paymentMethodButtonSelected {
@@ -687,67 +301,6 @@
   font-weight: bold;
 }
 
-.paymentMethodActions {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) 0;
-  display: flex;
-  justify-content: center;
-}
-
-.paymentMethodOption {
-  background-color: var(--color-gray-200);
-  border: 3px solid transparent;
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-2xl);
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.paymentMethodOption:hover {
-  background-color: var(--color-gray-300);
-}
-
-.paymentMethodOption.selected {
-  border-color: var(--color-primary);
-  background-color: rgba(255, 107, 107, 0.1);
-}
-
-.paymentMethodIcon {
-  font-size: 80px;
-  margin-bottom: var(--spacing-md);
-}
-
-.paymentMethodSimpleIcons {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.paymentMethodSimpleIcon {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius-md);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--color-white);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-}
-
-.paymentMethodLabel {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-900);
-}
-
 .paymentMethodFooter {
   padding: var(--spacing-xl) 0;
   display: flex;
@@ -762,7 +315,7 @@
 }
 
 /* ============================================================
-   PaymentProcessingPage Styles
+   PaymentProcessingPage
    ============================================================ */
 
 .paymentProcessingContainer {
@@ -795,7 +348,7 @@
 }
 
 /* ============================================================
-   PaymentCompletePage Styles
+   PaymentCompletePage
    ============================================================ */
 
 .paymentCompleteContainer {

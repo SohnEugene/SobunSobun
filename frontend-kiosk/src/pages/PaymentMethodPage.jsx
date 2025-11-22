@@ -27,21 +27,23 @@ export default function PaymentMethodPage({ onNext, onBack }) {
   };
 
   return (
-    <div className={styles.paymentMethodContainer}>
-      <div className={styles.paymentMethodHeader}>
+    <div className="kiosk-page">
+      <div className="kiosk-header">
         <button className={styles.paymentMethodBackButton} onClick={onBack}>
           ←
         </button>
       </div>
 
-      <div className={styles.paymentMethodContent}>
-        <h1 className={styles.paymentMethodTitle}>결제 수단</h1>
+      <div className="kiosk-content">
+        <h1 className="kiosk-title">결제 수단</h1>
 
         <div className={styles.paymentMethodOptions}>
           {/* 카카오페이 결제 */}
           <button
             className={`${styles.paymentMethodButton} ${
-              selectedMethod === PAYMENT_METHODS.KAKAO ? styles.paymentMethodButtonSelected : ''
+              selectedMethod === PAYMENT_METHODS.KAKAO
+                ? styles.paymentMethodButtonSelected
+                : ""
             }`}
             onClick={() => handleMethodSelect(PAYMENT_METHODS.KAKAO)}
           >
@@ -61,7 +63,9 @@ export default function PaymentMethodPage({ onNext, onBack }) {
           {/* 토스페이 결제 */}
           <button
             className={`${styles.paymentMethodButton} ${
-              selectedMethod === PAYMENT_METHODS.TOSS ? styles.paymentMethodButtonSelected : ''
+              selectedMethod === PAYMENT_METHODS.TOSS
+                ? styles.paymentMethodButtonSelected
+                : ""
             }`}
             onClick={() => handleMethodSelect(PAYMENT_METHODS.TOSS)}
           >
@@ -79,7 +83,7 @@ export default function PaymentMethodPage({ onNext, onBack }) {
           </button>
         </div>
 
-        <div className={styles.paymentMethodActions}>
+        <div className="kiosk-footer">
           <Button
             variant="primary"
             size="large"

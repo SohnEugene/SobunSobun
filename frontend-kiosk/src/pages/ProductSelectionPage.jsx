@@ -71,10 +71,10 @@ export default function ProductSelectionPage({ onNext, onHome }) {
   };
 
   const renderHeader = () => (
-    <div className={styles.productSelectionHeader}>
+    <div className="kiosk-header">
       <button
         type="button"
-        className={styles.headerHomeButton}
+        className="kiosk-home-button"
         onClick={handleHomeClick}
       >
         home
@@ -90,23 +90,19 @@ export default function ProductSelectionPage({ onNext, onHome }) {
     const hasDescriptionLines = descriptionLines.length > 0;
 
     return (
-      <div className={styles.productSelectionContainer}>
+      <div className="kiosk-page">
         {renderHeader()}
-        <div className={styles.productSelectionContent}>
-          <div className={styles.productSelectionState}>
+        <div className="kiosk-content">
+          <div className="kiosk-content-center">
             <div
-              className={`${styles.productSelectionStateCard} ${
-                variant === "loading"
-                  ? styles.productSelectionStateCardLoading
-                  : ""
+              className={`kiosk-state-card ${
+                variant === "loading" ? "kiosk-state-card-loading" : ""
               }`}
             >
-              {icon && (
-                <div className={styles.productSelectionStateIcon}>{icon}</div>
-              )}
-              <div className={styles.productSelectionStateTitle}>{title}</div>
+              {icon && <div className="kiosk-state-icon">{icon}</div>}
+              <div className="kiosk-state-title">{title}</div>
               {hasDescriptionLines ? (
-                <div className={styles.productSelectionStateDescription}>
+                <div className="kiosk-state-description">
                   {descriptionLines.map((line, index) => (
                     <span key={`${line}-${index}`}>
                       {line}
@@ -117,9 +113,7 @@ export default function ProductSelectionPage({ onNext, onHome }) {
               ) : (
                 !isStringDescription &&
                 description && (
-                  <div className={styles.productSelectionStateDescription}>
-                    {description}
-                  </div>
+                  <div className="kiosk-state-description">{description}</div>
                 )
               )}
             </div>
@@ -154,17 +148,12 @@ export default function ProductSelectionPage({ onNext, onHome }) {
   }
 
   return (
-    <div className={styles.productSelectionContainer}>
+    <div className="kiosk-page">
       {renderHeader()}
-      <div className={styles.productSelectionContent}>
+      <div className="kiosk-content">
+        <h1 className="kiosk-title">어떤 제품을 리필하시겠어요?</h1>
 
-        <div className={styles.productSelectionTitle}>
-          어떤 제품을 리필하시겠어요?
-        </div>
-
-        <div className={styles.productSelectionSubtitle}>
-          1g당 가격이 표시됩니다
-        </div>
+        <div className="kiosk-subtitle">1g당 가격이 표시됩니다</div>
 
         <div className={styles.productSelectionProducts}>
           {products.map((product) => {
@@ -188,7 +177,7 @@ export default function ProductSelectionPage({ onNext, onHome }) {
           })}
         </div>
 
-        <div className={styles.productSelectionFooter}>
+        <div className="kiosk-footer">
           <Button onClick={onNext} disabled={!session.selectedProduct}>
             상품 선택 완료
           </Button>
