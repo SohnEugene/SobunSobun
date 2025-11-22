@@ -14,12 +14,12 @@ const REFILL_STEPS = {
   EMPTY_CONTAINER: "empty", // 빈 병을 올리세요
   TARE_WEIGHT: "tare", // 병 무게 측정 완료
   FILL_PRODUCT: "fill", // 샴푸를 담은 병을 올리세요
-  // COMPLETE: "complete", // (제거됨) 실시간 가격 표시로 대체
 };
 
 export default function RefillStartPage({ onNext, onReset, onHome }) {
   const [step, setStep] = useState(REFILL_STEPS.WELCOME);
   const [stableWeight, setStableWeight] = useState(false);
+  const [devWeight, setDevWeight] = useState(null); // 개발용 override weight
   const weightRef = useRef(0);
 
   const {
@@ -29,57 +29,55 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
     calculateTotalPrice,
     resetSession,
   } = useSession();
+
   const {
-    weight,
+    weight: btWeight,
     isConnected,
     isConnecting,
-    error,
-    deviceName,
     connect,
-    disconnect,
   } = useBluetoothContext();
 
-  // step 변경 시 SessionContext 상태 출력
+  const displayWeight = devWeight !== null ? devWeight : btWeight;
+
+  // step 변경 시 로그
   useEffect(() => {
     console.log("Step changed to:", step);
     console.log("SessionContext:", session);
   }, [step, session]);
 
+  // 시작 화면 자동 진행
   useEffect(() => {
     if (step === REFILL_STEPS.WELCOME) {
       const timer = setTimeout(() => {
         handleWelcomeNext();
       }, 2000);
-
       return () => clearTimeout(timer);
     }
   }, [step]);
 
-  // 시작 화면에서 다음 단계로 (저울 연결 상태 확인)
   const handleWelcomeNext = () => {
-    if (isConnected) {
+    if (isConnected || devWeight !== null) {
       setStep(REFILL_STEPS.EMPTY_CONTAINER);
     } else {
       setStep(REFILL_STEPS.CONNECT_SCALE);
     }
   };
 
-  // 저울 연결 완료 후 다음 단계로
+  // 저울 연결 후 자동 진행
   useEffect(() => {
-    if (isConnected && step === REFILL_STEPS.CONNECT_SCALE) {
+    if ((isConnected || devWeight !== null) && step === REFILL_STEPS.CONNECT_SCALE) {
       setStep(REFILL_STEPS.EMPTY_CONTAINER);
     }
-  }, [isConnected, step]);
+  }, [isConnected, step, devWeight]);
 
-  // 무게 안정화 감지 (1초 동안 변화 없으면 stableWeight true)
+  // 무게 안정화 감지
   useEffect(() => {
     let timer;
-
     if (step === REFILL_STEPS.EMPTY_CONTAINER) {
-      if (weight > 0) {
-        if (weightRef.current !== weight) {
+      if (displayWeight > 0) {
+        if (weightRef.current !== displayWeight) {
           setStableWeight(false);
-          weightRef.current = weight;
+          weightRef.current = displayWeight;
         }
         timer = setTimeout(() => setStableWeight(true), 1000);
       } else {
@@ -88,10 +86,10 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
     }
 
     if (step === REFILL_STEPS.FILL_PRODUCT) {
-      if (weight > session.bottleWeight) {
-        if (weightRef.current !== weight) {
+      if (displayWeight > session.bottleWeight) {
+        if (weightRef.current !== displayWeight) {
           setStableWeight(false);
-          weightRef.current = weight;
+          weightRef.current = displayWeight;
         }
         timer = setTimeout(() => setStableWeight(true), 1000);
       } else {
@@ -100,23 +98,51 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
     }
 
     return () => clearTimeout(timer);
-  }, [weight, step, session.bottleWeight]);
+  }, [displayWeight, step, session.bottleWeight]);
 
   // 공병 무게 완료
   const handleTareComplete = () => {
-    setBottleWeight(weight);
+    setBottleWeight(displayWeight);
     setStep(REFILL_STEPS.TARE_WEIGHT);
     setTimeout(() => setStep(REFILL_STEPS.FILL_PRODUCT), 3000);
   };
 
   // 리필 완료
   const handleFillComplete = () => {
-    const fillWeight = weight - session.bottleWeight;
-    setCombinedWeight(weight);
+    const fillWeight = displayWeight - session.bottleWeight;
+    setCombinedWeight(displayWeight);
     calculateTotalPrice(fillWeight);
-    // COMPLETE 단계를 건너뛰고 바로 다음 페이지(결제)로 이동
     if (onNext) onNext();
   };
+
+  // 개발용 X 키 단축
+  useEffect(() => {
+    const handleKey = (event) => {
+      if (event.key === "x" || event.key === "X") {
+        console.log("⚡ 개발용 X 키 눌림");
+        if (step === REFILL_STEPS.CONNECT_SCALE) {
+          setDevWeight(50); // 공병 무게 세팅
+          setStep(REFILL_STEPS.EMPTY_CONTAINER);
+        } else if (step === REFILL_STEPS.EMPTY_CONTAINER) {
+          setDevWeight(50); // 공병 무게
+          handleTareComplete();
+        } else if (step === REFILL_STEPS.FILL_PRODUCT) {
+          let current = session.bottleWeight;
+          const target = 400;
+          const interval = setInterval(() => {
+            current += 10;
+            if (current >= target) {
+              current = target;
+              clearInterval(interval);
+            }
+            setDevWeight(current);
+          }, 100);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [step, session.bottleWeight]);
 
   // ===================== 렌더링 =====================
   if (step === REFILL_STEPS.WELCOME) {
@@ -132,6 +158,7 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
       </div>
     );
   }
+
   if (step === REFILL_STEPS.CONNECT_SCALE) {
     return (
       <div className="kiosk-page-primary">
@@ -147,16 +174,15 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
           <Button
             variant="small"
             onClick={connect}
-            disabled={isConnecting || isConnected}
+            disabled={isConnecting || isConnected || devWeight !== null}
           >
             {isConnecting
               ? "연결 중..."
-              : isConnected
-                ? "연결됨"
-                : "저울 연결하기"}
+              : isConnected || devWeight !== null
+              ? "연결됨"
+              : "저울 연결하기"}
           </Button>
         </div>
-        <div className="kiosk-footer"></div>
       </div>
     );
   }
@@ -178,8 +204,10 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
                 저울의 영점이 맞춰져 있는지 꼭 확인!
               </div>
             </div>
-            <img className="scale-image" src={scaleImg} />
-            <div className="refillWeightDisplay">현재 무게: {weight}g</div>
+            <img className="scale-image" src={scaleImg} alt="저울" />
+            <div className="refillWeightDisplay">
+              현재 무게: {displayWeight}g
+            </div>
           </div>
           <div className="kiosk-footer">
             <Button
@@ -198,7 +226,7 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
           <div className="kiosk-content">
             <div className="kiosk-content-header">
               <h1 className="kiosk-title-light">
-                병의 무게는 {session.bottleWeight}g이네요!
+                병의 무게는 {displayWeight}g이네요!
               </h1>
               <div className="kiosk-subtitle-light">
                 이 값은 빼고 계산할게요.
@@ -218,23 +246,22 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
                 병을 다시 올려주세요
               </h1>
             </div>
-            <img className="scale-image" src={scaleImg} />
+            <img className="scale-image" src={scaleImg} alt="저울" />
             <div className="refillWeightDisplay">
-              현재 무게: {weight}g (빈 병: {session.bottleWeight}g)
+              현재 무게: {displayWeight}g (빈 병: {session.bottleWeight}g)
             </div>
-            {weight > session.bottleWeight && (
+            {displayWeight > session.bottleWeight && (
               <div className="refillPricePreview">
                 <div className="refillPriceCalculation">
-                  ₩{session.selectedProduct?.price}/g × ({weight} -{" "}
+                  ₩{session.selectedProduct?.price}/g × ({displayWeight} -{" "}
                   {session.bottleWeight})g
-                  {session.purchaseContainer && " + ₩500"}
-                  &nbsp;=&nbsp;
+                  {session.purchaseContainer && " + ₩500"} &nbsp;=
                 </div>
                 <div className="refillPriceTotal">
                   ₩
                   {(
                     (session.selectedProduct?.price || 0) *
-                      (weight - session.bottleWeight) +
+                      (displayWeight - session.bottleWeight) +
                     (session.purchaseContainer ? 500 : 0)
                   ).toLocaleString()}
                 </div>
