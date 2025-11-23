@@ -1,10 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import DashboardPage from './pages/DashboardPage';
-import KiosksPage from './pages/KiosksPage';
-import ProductsPage from './pages/ProductsPage';
-import TransactionsPage from './pages/TransactionsPage';
-import './styles/global.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import DashboardPage from "./pages/DashboardPage";
+import KiosksPage from "./pages/KiosksPage";
+import ProductsPage from "./pages/ProductsPage";
+import TransactionsPage from "./pages/TransactionsPage";
+import "./styles/global.css";
 
 function App() {
   return (

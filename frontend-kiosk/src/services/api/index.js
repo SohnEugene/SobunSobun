@@ -14,11 +14,13 @@ export { getProducts, getProductById } from "./product.js";
 
 // Kiosk APIs
 // - registerKiosk(data): 키오스크 등록 (POST /kiosk/)
+// - getKiosk(kid): 키오스크 정보 조회 (GET /kiosk/{kid})
 // - getKioskProducts(kid): 키오스크 제품 목록 조회 (GET /kiosk/{kid}/products)
 // - addProductToKiosk(kid, pid): 키오스크에 제품 추가 (POST /kiosk/{kid}/products)
 // - removeProductFromKiosk(kid, pid): 키오스크에서 제품 제거 (DELETE /kiosk/{kid}/products/{pid})
 export {
   createKiosk as registerKiosk,
+  getKiosk,
   getKioskProducts,
   addProductToKiosk,
   removeProductFromKiosk,

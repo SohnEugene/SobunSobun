@@ -1,6 +1,14 @@
-import styles from './Button.module.css';
+import styles from "./Button.module.css";
 
-function Button({ children, variant = 'primary', size = 'medium', onClick, disabled, type = 'button', className = '' }) {
+function Button({
+  children,
+  variant = "primary",
+  size = "medium",
+  onClick,
+  disabled,
+  type = "button",
+  className = "",
+}) {
   return (
     <button
       type={type}

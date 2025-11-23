@@ -65,7 +65,10 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
 
   // 저울 연결 후 자동 진행
   useEffect(() => {
-    if ((isConnected || devWeight !== null) && step === REFILL_STEPS.CONNECT_SCALE) {
+    if (
+      (isConnected || devWeight !== null) &&
+      step === REFILL_STEPS.CONNECT_SCALE
+    ) {
       setStep(REFILL_STEPS.EMPTY_CONTAINER);
     }
   }, [isConnected, step, devWeight]);
@@ -179,8 +182,8 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
             {isConnecting
               ? "연결 중..."
               : isConnected || devWeight !== null
-              ? "연결됨"
-              : "저울 연결하기"}
+                ? "연결됨"
+                : "저울 연결하기"}
           </Button>
         </div>
       </div>
