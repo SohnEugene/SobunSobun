@@ -39,6 +39,35 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
 
   const displayWeight = devWeight !== null ? devWeight : btWeight;
 
+  // 개발용: 콘솔에서 무게를 설정할 수 있도록 전역 함수 노출
+  useEffect(() => {
+    // 전역 함수 추가
+    window.setWeight = (weight) => {
+      console.log(`🔧 [DEV] 무게를 ${weight}g로 설정합니다`);
+      setDevWeight(weight);
+    };
+
+    window.resetWeight = () => {
+      console.log("🔧 [DEV] 무게를 블루투스 값으로 초기화합니다");
+      setDevWeight(null);
+    };
+
+    window.getCurrentStep = () => {
+      console.log("🔧 [DEV] 현재 단계:", step);
+      console.log("🔧 [DEV] 현재 무게:", displayWeight);
+      console.log("🔧 [DEV] 공병 무게:", session.bottleWeight);
+      console.log("🔧 [DEV] isConnected:", isConnected);
+      return { step, weight: displayWeight, bottleWeight: session.bottleWeight, isConnected };
+    };
+
+    // 컴포넌트 언마운트 시 정리
+    return () => {
+      delete window.setWeight;
+      delete window.resetWeight;
+      delete window.getCurrentStep;
+    };
+  }, [step, displayWeight, session.bottleWeight, isConnected]);
+
   // step 변경 시 로그
   useEffect(() => {
     console.log("Step changed to:", step);
@@ -119,14 +148,17 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
   useEffect(() => {
     const handleKey = (event) => {
       if (event.key === "x" || event.key === "X") {
-        console.log("⚡ 개발용 X 키 눌림");
+        console.log("⚡ 개발용 X 키 눌림, 현재 단계:", step);
         if (step === REFILL_STEPS.CONNECT_SCALE) {
+          console.log("→ 저울 연결 단계 스킵: 무게 50g 설정 후 공병 측정 단계로 이동");
           setDevWeight(50); // 공병 무게 세팅
           setStep(REFILL_STEPS.EMPTY_CONTAINER);
         } else if (step === REFILL_STEPS.EMPTY_CONTAINER) {
+          console.log("→ 공병 무게 50g 확정 후 리필 단계로 이동");
           setDevWeight(50); // 공병 무게
           handleTareComplete();
         } else if (step === REFILL_STEPS.FILL_PRODUCT) {
+          console.log("→ 리필 무게 애니메이션 시작 (목표: 400g)");
           let current = session.bottleWeight;
           const target = 400;
           const interval = setInterval(() => {
@@ -137,12 +169,14 @@ export default function RefillStartPage({ onNext, onReset, onHome }) {
             }
             setDevWeight(current);
           }, 100);
+        } else {
+          console.log("→ 이 단계에서는 X 키가 동작하지 않습니다");
         }
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [step, session.bottleWeight]);
+  }, [step, session.bottleWeight, handleTareComplete]);
 
   // ===================== 렌더링 =====================
   if (step === REFILL_STEPS.WELCOME) {
