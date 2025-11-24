@@ -1,5 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
-import styles from "./Layout.module.css";
+import { NavLink, Outlet } from 'react-router-dom';
+import styles from './Layout.module.css';
 
 function Layout() {
   return (
@@ -12,7 +12,7 @@ function Layout() {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.active : ""}`
+              `${styles.navLink} ${isActive ? styles.active : ''}`
             }
             end
           >
@@ -21,7 +21,7 @@ function Layout() {
           <NavLink
             to="/kiosks"
             className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.active : ""}`
+              `${styles.navLink} ${isActive ? styles.active : ''}`
             }
           >
             Kiosk Management
@@ -29,7 +29,7 @@ function Layout() {
           <NavLink
             to="/products"
             className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.active : ""}`
+              `${styles.navLink} ${isActive ? styles.active : ''}`
             }
           >
             Product Management
@@ -37,7 +37,7 @@ function Layout() {
           <NavLink
             to="/transactions"
             className={({ isActive }) =>
-              `${styles.navLink} ${isActive ? styles.active : ""}`
+              `${styles.navLink} ${isActive ? styles.active : ''}`
             }
           >
             Transactions

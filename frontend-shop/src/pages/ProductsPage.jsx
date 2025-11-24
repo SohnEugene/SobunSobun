@@ -1,14 +1,8 @@
-import { useState, useEffect } from "react";
-import {
-  getProducts,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  uploadProductImage,
-} from "../services/api";
-import { formatPrice } from "../utils/formatters";
-import Button from "../components/Button";
-import styles from "./ProductsPage.module.css";
+import { useState, useEffect } from 'react';
+import { getProducts, createProduct, updateProduct, deleteProduct, uploadProductImage } from '../services/api';
+import { formatPrice } from '../utils/formatters';
+import Button from '../components/Button';
+import styles from './ProductsPage.module.css';
 
 function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -17,12 +11,12 @@ function ProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    original_price: "",
-    original_gram: "",
-    image_url: "",
+    name: '',
+    description: '',
+    price: '',
+    original_price: '',
+    original_gram: '',
+    image_url: '',
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -49,22 +43,22 @@ function ProductsPage() {
       setEditingProduct(product);
       setFormData({
         name: product.name,
-        description: product.description || "",
+        description: product.description || '',
         price: product.price,
-        original_price: product.original_price || "",
-        original_gram: product.original_gram || "",
-        image_url: product.image_url || "",
+        original_price: product.original_price || '',
+        original_gram: product.original_gram || '',
+        image_url: product.image_url || '',
       });
       setImagePreview(product.image_url || null);
     } else {
       setEditingProduct(null);
       setFormData({
-        name: "",
-        description: "",
-        price: "",
-        original_price: "",
-        original_gram: "",
-        image_url: "",
+        name: '',
+        description: '',
+        price: '',
+        original_price: '',
+        original_gram: '',
+        image_url: '',
       });
       setImagePreview(null);
     }
@@ -76,12 +70,12 @@ function ProductsPage() {
     setShowModal(false);
     setEditingProduct(null);
     setFormData({
-      name: "",
-      description: "",
-      price: "",
-      original_price: "",
-      original_gram: "",
-      image_url: "",
+      name: '',
+      description: '',
+      price: '',
+      original_price: '',
+      original_gram: '',
+      image_url: '',
     });
     setImageFile(null);
     setImagePreview(null);
@@ -107,13 +101,9 @@ function ProductsPage() {
         name: formData.name,
         description: formData.description,
         price: Number(formData.price),
-        original_price:
-          formData.original_price !== ""
-            ? Number(formData.original_price)
-            : null,
-        original_gram:
-          formData.original_gram !== "" ? Number(formData.original_gram) : null,
-        image_url: formData.image_url || "",
+        original_price: formData.original_price !== '' ? Number(formData.original_price) : null,
+        original_gram: formData.original_gram !== '' ? Number(formData.original_gram) : null,
+        image_url: formData.image_url || '',
       };
 
       let productId;
@@ -139,7 +129,7 @@ function ProductsPage() {
   };
 
   const handleDelete = async (productId) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    if (!confirm('Are you sure you want to delete this product?')) return;
     try {
       await deleteProduct(productId);
       loadProducts();
@@ -207,16 +197,14 @@ function ProductsPage() {
       {showModal && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h2>{editingProduct ? "Edit Product" : "Add New Product"}</h2>
+            <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.formGroup}>
                 <label>Name *</label>
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                 />
               </div>
@@ -225,9 +213,7 @@ function ProductsPage() {
                 <label>Description</label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
                 />
               </div>
@@ -237,9 +223,7 @@ function ProductsPage() {
                 <input
                   type="number"
                   value={formData.price}
-                  onChange={(e) =>
-                    setFormData({ ...formData, price: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   required
                   min="0"
                 />
@@ -250,9 +234,7 @@ function ProductsPage() {
                 <input
                   type="number"
                   value={formData.original_price}
-                  onChange={(e) =>
-                    setFormData({ ...formData, original_price: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, original_price: e.target.value })}
                   min="0"
                 />
               </div>
@@ -262,9 +244,7 @@ function ProductsPage() {
                 <input
                   type="number"
                   value={formData.original_gram}
-                  onChange={(e) =>
-                    setFormData({ ...formData, original_gram: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, original_gram: e.target.value })}
                   min="0"
                 />
               </div>
@@ -284,15 +264,11 @@ function ProductsPage() {
               </div>
 
               <div className={styles.modalActions}>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleCloseModal}
-                >
+                <Button type="button" variant="secondary" onClick={handleCloseModal}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={uploading}>
-                  {uploading ? "Uploading..." : editingProduct ? "Save" : "Add"}
+                  {uploading ? 'Uploading...' : editingProduct ? 'Save' : 'Add'}
                 </Button>
               </div>
             </form>

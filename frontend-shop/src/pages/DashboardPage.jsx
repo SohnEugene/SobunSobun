@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { getKiosks, getProducts, getTransactions } from "../services/api";
-import { formatPrice, formatNumber } from "../utils/formatters";
-import styles from "./DashboardPage.module.css";
+import { useState, useEffect } from 'react';
+import { getKiosks, getProducts, getTransactions } from '../services/api';
+import { formatPrice, formatNumber } from '../utils/formatters';
+import styles from './DashboardPage.module.css';
 
 function DashboardPage() {
   const [stats, setStats] = useState({
@@ -26,7 +26,7 @@ function DashboardPage() {
 
         const totalRevenue = transactions.reduce(
           (sum, t) => sum + (t.total_price || 0),
-          0,
+          0
         );
 
         setStats({
@@ -62,27 +62,19 @@ function DashboardPage() {
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Kiosks</span>
-          <span className={styles.statValue}>
-            {formatNumber(stats.totalKiosks)}
-          </span>
+          <span className={styles.statValue}>{formatNumber(stats.totalKiosks)}</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Products</span>
-          <span className={styles.statValue}>
-            {formatNumber(stats.totalProducts)}
-          </span>
+          <span className={styles.statValue}>{formatNumber(stats.totalProducts)}</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Transactions</span>
-          <span className={styles.statValue}>
-            {formatNumber(stats.totalTransactions)}
-          </span>
+          <span className={styles.statValue}>{formatNumber(stats.totalTransactions)}</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Revenue</span>
-          <span className={styles.statValue}>
-            {formatPrice(stats.totalRevenue)}
-          </span>
+          <span className={styles.statValue}>{formatPrice(stats.totalRevenue)}</span>
         </div>
       </div>
 

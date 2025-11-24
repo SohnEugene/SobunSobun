@@ -18,62 +18,63 @@ export default function PaymentProcessingPage({ onNext, onHome }) {
 
   const initializedRef = useRef(false);
 
-  useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
+useEffect(() => {
+  if (initializedRef.current) return;
+  initializedRef.current = true;
 
-    const initializePayment = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  const initializePayment = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        if (!session.selectedProduct) {
-          throw new Error("선택된 제품이 없습니다.");
-        }
-
-        if (!session.paymentMethod) {
-          throw new Error("결제 수단이 선택되지 않았습니다.");
-        }
-
-        const kioskId = getKioskId();
-        if (!kioskId) {
-          throw new Error("키오스크 ID가 없습니다.");
-        }
-
-        const managerCode = getManagerCode();
-        if (!managerCode) {
-          throw new Error("관리자가 설정되지 않았습니다.");
-        }
-
-        const paymentData = {
-          kid: kioskId,
-          pid: session.selectedProduct.pid,
-          amount_grams: Math.round(session.weight),
-          extra_bottle: session.purchaseContainer,
-          product_price: session.pricePerGram,
-          total_price: session.totalPrice,
-          payment_method: session.paymentMethod,
-          manager: managerCode,
-        };
-
-        console.log("💳 결제 준비 요청:", paymentData);
-
-        const response = await preparePayment(paymentData);
-
-        console.log("✅ 결제 준비 응답:", response);
-
-        setTxid(response.txid);
-        setQrCodeBase64(response.qr_code_base64);
-      } catch (err) {
-        console.error("❌ 결제 준비 실패:", err);
-        setError(err.message || "결제 준비 중 오류가 발생했습니다.");
-      } finally {
-        setIsLoading(false);
+      if (!session.selectedProduct) {
+        throw new Error("선택된 제품이 없습니다.");
       }
-    };
 
-    initializePayment();
-  }, []);
+      if (!session.paymentMethod) {
+        throw new Error("결제 수단이 선택되지 않았습니다.");
+      }
+
+      const kioskId = getKioskId();
+      if (!kioskId) {
+        throw new Error("키오스크 ID가 없습니다.");
+      }
+
+      const managerCode = getManagerCode();
+      if (!managerCode) {
+        throw new Error("관리자가 설정되지 않았습니다.");
+      }
+
+      const paymentData = {
+        kid: kioskId,
+        pid: session.selectedProduct.pid,
+        amount_grams: Math.round(session.weight),
+        extra_bottle: session.purchaseContainer,
+        product_price: session.pricePerGram,
+        total_price: session.totalPrice,
+        payment_method: session.paymentMethod,
+        manager: managerCode,
+      };
+
+      console.log("💳 결제 준비 요청:", paymentData);
+
+      const response = await preparePayment(paymentData);
+
+      console.log("✅ 결제 준비 응답:", response);
+
+      setTxid(response.txid);
+      setQrCodeBase64(response.qr_code_base64);
+    } catch (err) {
+      console.error("❌ 결제 준비 실패:", err);
+      setError(err.message || "결제 준비 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  initializePayment();
+}, []);
+
 
   const handleApprovePayment = async () => {
     if (!txid) {

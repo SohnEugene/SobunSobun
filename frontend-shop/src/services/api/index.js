@@ -1,3 +1,3 @@
-export * from "./kiosk";
-export * from "./product";
-export * from "./transaction";
+export * from './kiosk';
+export * from './product';
+export * from './transaction';

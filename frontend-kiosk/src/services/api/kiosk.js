@@ -30,21 +30,6 @@ export async function createKiosk(kioskData) {
 }
 
 /**
- * 키오스크 정보 조회
- *
- * @async
- * @param {string} kioskId - 키오스크 ID (kid)
- * @returns {Promise<Object>} 키오스크 정보 { kid: string, name: string, location: string, ... }
- *
- * @example
- * const kiosk = await getKiosk('kiosk_001');
- * console.log(kiosk.name, kiosk.location);
- */
-export async function getKiosk(kioskId) {
-  return request(`/kiosks/${kioskId}`);
-}
-
-/**
  * 키오스크의 제품 목록 조회
  *
  * @async

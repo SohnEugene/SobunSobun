@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { getTransactions, getKiosks } from "../services/api";
-import { formatPrice, formatDateTime, formatWeight } from "../utils/formatters";
-import Button from "../components/Button";
-import styles from "./TransactionsPage.module.css";
+import { useState, useEffect } from 'react';
+import { getTransactions, getKiosks } from '../services/api';
+import { formatPrice, formatDateTime, formatWeight } from '../utils/formatters';
+import Button from '../components/Button';
+import styles from './TransactionsPage.module.css';
 
 function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
@@ -10,9 +10,9 @@ function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    kioskId: "",
-    startDate: "",
-    endDate: "",
+    kioskId: '',
+    startDate: '',
+    endDate: '',
   });
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -33,7 +33,7 @@ function TransactionsPage() {
       const data = await getKiosks();
       setKiosks(data);
     } catch (err) {
-      console.error("Failed to load kiosks:", err);
+      console.error('Failed to load kiosks:', err);
     }
   };
 
@@ -49,14 +49,8 @@ function TransactionsPage() {
       setTransactions(data);
 
       // Calculate stats
-      const totalRevenue = data.reduce(
-        (sum, t) => sum + (t.total_price || 0),
-        0,
-      );
-      const totalWeight = data.reduce(
-        (sum, t) => sum + (t.amount_grams || 0),
-        0,
-      );
+      const totalRevenue = data.reduce((sum, t) => sum + (t.total_price || 0), 0);
+      const totalWeight = data.reduce((sum, t) => sum + (t.amount_grams || 0), 0);
       setStats({
         totalRevenue,
         totalTransactions: data.length,
@@ -75,24 +69,16 @@ function TransactionsPage() {
 
   const handleClearFilters = () => {
     setFilters({
-      kioskId: "",
-      startDate: "",
-      endDate: "",
+      kioskId: '',
+      startDate: '',
+      endDate: '',
     });
   };
 
   const exportToCSV = () => {
     if (transactions.length === 0) return;
 
-    const headers = [
-      "ID",
-      "Date",
-      "Kiosk",
-      "Product",
-      "Weight (g)",
-      "Price",
-      "Payment Method",
-    ];
+    const headers = ['ID', 'Date', 'Kiosk', 'Product', 'Weight (g)', 'Price', 'Payment Method'];
     const rows = transactions.map((t) => [
       t.transaction_id,
       new Date(t.created_at).toISOString(),
@@ -100,15 +86,15 @@ function TransactionsPage() {
       t.pid,
       t.amount_grams || 0,
       t.total_price || 0,
-      t.payment_method || "",
+      t.payment_method || '',
     ]);
 
-    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
+    const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = `transactions_${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -127,9 +113,7 @@ function TransactionsPage() {
       <div className={styles.statsRow}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Revenue</span>
-          <span className={styles.statValue}>
-            {formatPrice(stats.totalRevenue)}
-          </span>
+          <span className={styles.statValue}>{formatPrice(stats.totalRevenue)}</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Transactions</span>
@@ -137,9 +121,7 @@ function TransactionsPage() {
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Total Weight</span>
-          <span className={styles.statValue}>
-            {formatWeight(stats.totalWeight)}
-          </span>
+          <span className={styles.statValue}>{formatWeight(stats.totalWeight)}</span>
         </div>
       </div>
 
@@ -148,7 +130,7 @@ function TransactionsPage() {
           <label>Kiosk</label>
           <select
             value={filters.kioskId}
-            onChange={(e) => handleFilterChange("kioskId", e.target.value)}
+            onChange={(e) => handleFilterChange('kioskId', e.target.value)}
           >
             <option value="">All Kiosks</option>
             {kiosks.map((kiosk) => (
@@ -163,7 +145,7 @@ function TransactionsPage() {
           <input
             type="date"
             value={filters.startDate}
-            onChange={(e) => handleFilterChange("startDate", e.target.value)}
+            onChange={(e) => handleFilterChange('startDate', e.target.value)}
           />
         </div>
         <div className={styles.filterGroup}>
@@ -171,7 +153,7 @@ function TransactionsPage() {
           <input
             type="date"
             value={filters.endDate}
-            onChange={(e) => handleFilterChange("endDate", e.target.value)}
+            onChange={(e) => handleFilterChange('endDate', e.target.value)}
           />
         </div>
         <Button variant="secondary" size="small" onClick={handleClearFilters}>
@@ -207,10 +189,8 @@ function TransactionsPage() {
                   <td>{formatWeight(t.amount_grams || 0)}</td>
                   <td>{formatPrice(t.total_price || 0)}</td>
                   <td>
-                    <span
-                      className={`${styles.paymentBadge} ${styles[t.payment_method] || ""}`}
-                    >
-                      {t.payment_method || "N/A"}
+                    <span className={`${styles.paymentBadge} ${styles[t.payment_method] || ''}`}>
+                      {t.payment_method || 'N/A'}
                     </span>
                   </td>
                 </tr>

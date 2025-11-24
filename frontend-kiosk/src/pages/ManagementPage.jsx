@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   registerKiosk,
-  getKiosk,
   getKioskProducts,
   addProductToKiosk,
   removeProductFromKiosk,
@@ -55,24 +54,6 @@ export default function ManagementPage() {
     connect,
     disconnect,
   } = useBluetoothContext();
-
-  useEffect(() => {
-    const verifyKiosk = async () => {
-      const storedKiosk = getKioskInfo();
-      if (storedKiosk?.kid) {
-        try {
-          await getKiosk(storedKiosk.kid);
-          setRegisteredInfo(storedKiosk);
-        } catch (err) {
-          console.error("키오스크 검증 실패:", err);
-          clearKioskInfo();
-          setRegisteredInfo(null);
-        }
-      }
-    };
-
-    verifyKiosk();
-  }, []);
 
   useEffect(() => {
     if (currentView === VIEWS.PRODUCTS) {

@@ -1,11 +1,11 @@
-const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:8000/api";
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:8000/api';
 
-export async function request(endpoint, options = {}, responseType = "json") {
+export async function request(endpoint, options = {}, responseType = 'json') {
   const url = `${BASE_URL}${endpoint}`;
 
   const config = {
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...options.headers,
     },
     ...options,
@@ -16,18 +16,16 @@ export async function request(endpoint, options = {}, responseType = "json") {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.detail || `HTTP error! status: ${response.status}`,
-      );
+      throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
     }
 
-    if (responseType === "blob") {
+    if (responseType === 'blob') {
       return await response.blob();
     }
 
     return await response.json();
   } catch (error) {
-    console.error("API request failed:", error);
+    console.error('API request failed:', error);
     throw error;
   }
 }
