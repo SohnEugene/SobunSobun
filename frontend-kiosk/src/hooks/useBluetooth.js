@@ -76,15 +76,19 @@ export function useBluetooth({ saveToStorage = false } = {}) {
    * 현재 연결된 BLE 장치와의 연결을 종료하고, 모든 상태를 초기화합니다.
    * - 이벤트 리스너 정리
    * - GATT 서버 연결 해제
-   * - localStorage 정리 (saveToStorage가 true인 경우)
+   * - localStorage 정리 (clearStorage가 true인 경우에만)
    * - 모든 ref 및 state 초기화
    *
    * @function
+   * @param {boolean} clearStorage - localStorage에서 장치 정보 삭제 여부 (기본값: false)
    * @returns {void}
    */
-  const disconnect = useCallback(() => {
+  const disconnect = useCallback((clearStorage = false) => {
+    console.log("🔴 [BLE] 연결 해제 시작 (clearStorage:", clearStorage, ")");
+
     // 이벤트 리스너 정리
     if (deviceRef.current && disconnectHandlerRef.current) {
+      console.log("🧹 [BLE] 이벤트 리스너 정리 중...");
       deviceRef.current.removeEventListener(
         "gattserverdisconnected",
         disconnectHandlerRef.current,
@@ -94,22 +98,28 @@ export function useBluetooth({ saveToStorage = false } = {}) {
 
     // GATT 연결 해제
     if (deviceRef.current?.gatt?.connected) {
-      console.log("🔌 Disconnecting from device...");
+      console.log("🔌 [BLE] GATT 연결 해제 중...");
       deviceRef.current.gatt.disconnect();
+      console.log("✅ [BLE] GATT 연결 해제 완료");
     }
 
-    // localStorage에서 장치 정보 삭제 (saveToStorage가 true였을 경우에만)
-    if (saveToStorage) {
+    // localStorage에서 장치 정보 삭제 (명시적으로 요청한 경우에만)
+    if (clearStorage && saveToStorage) {
+      console.log("🗑️ [BLE] 저장된 장치 정보 삭제 중...");
       clearBluetoothDevice();
+    } else {
+      console.log("💾 [BLE] 저장된 장치 정보 유지");
     }
 
     // 상태 초기화
+    console.log("🔄 [BLE] 상태 초기화 중...");
     deviceRef.current = null;
     characteristicRef.current = null;
     setIsConnected(false);
     setWeight(0);
     setError(null);
     setDeviceName(null);
+    console.log("✅ [BLE] 연결 해제 완료");
   }, [saveToStorage]);
 
   // ============================================================
@@ -171,38 +181,43 @@ export function useBluetooth({ saveToStorage = false } = {}) {
    * await connect(); // 장치 선택 UI가 표시됨
    */
   const connect = useCallback(async () => {
+    console.log("🔵 [BLE] 연결 시도 시작");
     setIsConnecting(true);
     setError(null);
 
     try {
       // localStorage에서 이전에 연결한 기기 정보 가져오기
       const savedDevice = getBluetoothDevice();
+      console.log("📦 [BLE] 저장된 장치 정보:", savedDevice);
 
       let requestOptions;
 
       if (savedDevice?.name) {
         // 저장된 기기 이름으로 필터링
-        console.log("🔍 Filtering by saved device name:", savedDevice.name);
+        console.log("🔍 [BLE] 저장된 장치로 필터링:", savedDevice.name);
         requestOptions = {
           filters: [{ name: savedDevice.name }],
           optionalServices: [SCALE_SERVICE_UUID],
         };
       } else {
         // 저장된 기기 없으면 모든 기기 표시
-        console.log("🔍 No saved device, showing all devices");
+        console.log("🔍 [BLE] 저장된 장치 없음, 모든 장치 표시");
         requestOptions = {
           acceptAllDevices: true,
           optionalServices: [SCALE_SERVICE_UUID],
         };
       }
 
+      console.log("🔎 [BLE] 장치 검색 시작...");
       const device = await navigator.bluetooth.requestDevice(requestOptions);
+      console.log("✅ [BLE] 장치 선택됨:", device.name || "Unknown Device", "ID:", device.id);
 
       deviceRef.current = device;
       setDeviceName(device.name || "Unknown Device");
 
       // localStorage에 장치 정보 저장 (saveToStorage가 true일 경우에만)
       if (saveToStorage) {
+        console.log("💾 [BLE] 장치 정보 저장 중...");
         saveBluetoothDevice({
           id: device.id,
           name: device.name || "Unknown Device",
@@ -211,46 +226,85 @@ export function useBluetooth({ saveToStorage = false } = {}) {
 
       // 예기치 않은 연결 해제 시 처리
       const handleDisconnect = () => {
-        disconnect();
+        console.log("⚠️ [BLE] 장치 연결이 예기치 않게 끊어졌습니다");
+        setIsConnected(false);
+        setError("장치 연결이 끊어졌습니다. 다시 연결해주세요.");
+        // 장치 정보는 유지하고 상태만 초기화 (재연결 가능하도록)
       };
       disconnectHandlerRef.current = handleDisconnect;
       device.addEventListener("gattserverdisconnected", handleDisconnect);
 
       // GATT 서버 연결
+      console.log("🔗 [BLE] GATT 서버 연결 중...");
       const server = await device.gatt.connect();
+      console.log("✅ [BLE] GATT 서버 연결 성공");
+
+      console.log("🔎 [BLE] 서비스 검색 중... UUID:", SCALE_SERVICE_UUID);
       const service = await server.getPrimaryService(SCALE_SERVICE_UUID);
+      console.log("✅ [BLE] 서비스 발견");
+
+      console.log("🔎 [BLE] Characteristic 검색 중... UUID:", SCALE_CHAR_UUID);
       const characteristic = await service.getCharacteristic(SCALE_CHAR_UUID);
+      console.log("✅ [BLE] Characteristic 발견");
 
       characteristicRef.current = characteristic;
 
       // Notify 지원 확인
+      console.log("🔍 [BLE] Notification 지원 확인 중...");
       if (!characteristic.properties.notify) {
+        console.error("❌ [BLE] 이 장치는 Notification을 지원하지 않습니다");
         throw new Error(
           "This device does not support notifications. Please use a compatible scale.",
         );
       }
+      console.log("✅ [BLE] Notification 지원됨");
 
       // 수신된 데이터 처리 핸들러
       const handleValue = (value) => {
         const newWeight = parseWeight(value);
         const adjustedWeight = Math.round(newWeight / 100); // 들어오는 무게는 .0g 단위
+        console.log("📊 [BLE] 무게 데이터 수신:", adjustedWeight, "g (원본:", newWeight, ")");
         setWeight(adjustedWeight);
       };
 
       // Notify로 데이터 수신 시작
+      console.log("🔔 [BLE] Notification 시작 중...");
       await characteristic.startNotifications();
+      console.log("✅ [BLE] Notification 시작됨");
+
       characteristic.addEventListener("characteristicvaluechanged", (e) => {
         handleValue(e.target.value);
       });
 
+      console.log("🎉 [BLE] 연결 완료!");
       setIsConnected(true);
       setIsConnecting(false);
     } catch (err) {
+      console.error("❌ [BLE] 연결 실패:", err.message);
+      console.error("❌ [BLE] 에러 상세:", err);
       setError(err.message || "Failed to connect to scale");
       setIsConnecting(false);
-      disconnect();
+      // 연결 실패 시에는 저장된 정보를 유지 (clearStorage=false)
+      disconnect(false);
     }
   }, [disconnect, parseWeight, saveToStorage]);
+
+  // ============================================================
+  // 내부 함수: 장치 정보를 삭제하고 연결 해제
+  // ============================================================
+  /**
+   * disconnectAndClear - BLE 장치 연결 해제 및 저장된 정보 삭제
+   *
+   * @description
+   * 사용자가 명시적으로 연결을 해제할 때 사용합니다.
+   * 연결을 끊고 localStorage에서 장치 정보도 함께 삭제합니다.
+   *
+   * @function
+   * @returns {void}
+   */
+  const disconnectAndClear = useCallback(() => {
+    disconnect(true);
+  }, [disconnect]);
 
   // ============================================================
   // Hook 반환값
@@ -263,5 +317,6 @@ export function useBluetooth({ saveToStorage = false } = {}) {
     deviceName,
     connect,
     disconnect,
+    disconnectAndClear,
   };
 }
