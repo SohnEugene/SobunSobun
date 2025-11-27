@@ -49,37 +49,10 @@ class QRCodeServiceException(HTTPException):
 
 
 class QRCodeGenerationException(QRCodeServiceException):
-    """Raised when QR code generation fails."""
+    """Raised when QR code generation fails (e.g., image encoding, URL generation)."""
     def __init__(self, reason: str):
         super().__init__(
             detail=f"QR code generation failed: {reason}",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-
-class InvalidPaymentTypeException(QRCodeServiceException):
-    """Raised when an invalid payment type is provided."""
-    def __init__(self, pay_type: str):
-        super().__init__(
-            detail=f"Invalid payment type: {pay_type}. Must be 'kakaopay' or 'tosspay'",
-            status_code=status.HTTP_400_BAD_REQUEST
-        )
-
-
-class InvalidManagerException(QRCodeServiceException):
-    """Raised when an invalid manager is provided."""
-    def __init__(self, manager: str, valid_managers: list):
-        super().__init__(
-            detail=f"Invalid manager: {manager}. Must be one of: {', '.join(valid_managers)}",
-            status_code=status.HTTP_400_BAD_REQUEST
-        )
-
-
-class PaymentInfoNotSetException(QRCodeServiceException):
-    """Raised when trying to generate QR code without setting payment info."""
-    def __init__(self):
-        super().__init__(
-            detail="Payment information not set. Call set_payment_info() first",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 

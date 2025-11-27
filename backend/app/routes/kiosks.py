@@ -11,15 +11,12 @@ from app.models import (
     AddProductToKioskRequest,
     AddProductToKioskResponse,
     GetKioskProductsResponse,
-    UpdateProductStatusRequest,
-    UpdateProductStatusResponse,
     DeleteProductFromKioskResponse
 )
 from app.exceptions import (
     KioskInvalidDataException,
     ProductAlreadyExistsException,
     ProductNotAssignedException,
-    ProductStatusUnchangedException
 )
 
 
@@ -47,7 +44,7 @@ async def register_kiosk(request: RegisterKioskRequest):
     Register a new kiosk.
 
     Args:
-        request (RegisterKioskRequest): Kiosk creation data (name, location).
+        RegisterKioskRequest: Kiosk creation data (name, location).
 
     Returns:
         RegisterKioskResponse: Created kiosk ID (kid).
@@ -159,7 +156,7 @@ async def add_product_to_kiosk(kid: str, request: AddProductToKioskRequest):
 
     Args:
         kid (str): Kiosk ID
-        request (AddProductToKioskRequest): Contains pid
+        AddProductToKioskRequest: Contains pid
 
     Returns:
         AddProductToKioskResponse: Success message
@@ -186,61 +183,6 @@ async def add_product_to_kiosk(kid: str, request: AddProductToKioskRequest):
 
     return AddProductToKioskResponse(
         message=f"Product {product.pid} added to kiosk {kid}"
-    )
-
-@router.patch("/{kid}/products/{pid}", response_model=UpdateProductStatusResponse, status_code=status.HTTP_200_OK)
-async def update_product_status(kid: str, pid: str, request: UpdateProductStatusRequest):
-    """
-    Update product availability status at a specific kiosk
-
-    Args:
-        kid: Kiosk ID
-        pid: Product ID
-        request: UpdateProductStatusRequest with available boolean
-
-    Returns:
-        UpdateProductStatusResponse: Success message with updated available status
-
-    Raises:
-        KioskNotFoundException: 404 if kiosk not found
-        ProductNotFoundException: 404 if product not found
-        ProductNotAssignedException: 404 if product not assigned to kiosk
-        ProductStatusUnchangedException: 400 if status is already set to the requested value
-        KioskException: 500 for database or other kiosk-related errors
-        ProductException: 500 for product-related errors
-    """
-    kiosk = firebase_service.get_kiosk_by_id(kid)
-    firebase_service.get_product_by_id(pid)
-
-    product_found = False
-    current_availability = None
-    updated_products = []
-
-    for kiosk_prod in kiosk.products:
-        prod_id = kiosk_prod.get('pid')
-
-        if prod_id == pid:
-            product_found = True
-            current_availability = kiosk_prod.get('available', False)
-            
-            if current_availability == request.available:
-                raise ProductStatusUnchangedException(pid=pid, current_status=current_availability)
-
-            updated_products.append({
-                "pid": prod_id,
-                "available": request.available
-            })
-        else:
-            updated_products.append(kiosk_prod)
-    
-    if not product_found:
-        raise ProductNotAssignedException(pid=pid, kid=kid)
-    
-    firebase_service.update_kiosk(kid, {"products": updated_products})
-
-    status_text = "available" if request.available else "sold out"
-    return UpdateProductStatusResponse(
-        message=f"Product {pid} marked as {status_text}"
     )
 
 @router.delete("/{kid}/products/{pid}", response_model=DeleteProductFromKioskResponse, status_code=status.HTTP_200_OK)

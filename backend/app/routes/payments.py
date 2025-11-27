@@ -11,6 +11,8 @@ from app.models import (
 from app.exceptions import (
     ProductNotAvailableException,
     PaymentAlreadyCompletedException,
+    InvalidPaymentTypeException,
+    InvalidManagerException
 )
 from app.services.firebase import firebase_service
 from app.services.qrcode_generator import qrcode_service
@@ -45,19 +47,31 @@ async def request_payment(request: PaymentRequest):
         ProductException: 500 for product-related errors
         PaymentException: 500 for transaction creation errors
     """
+    # 1. Validate kiosk and product exist
     kiosk = firebase_service.get_kiosk_by_id(request.kid)
     firebase_service.get_product_by_id(request.pid)
-    
+
+    # 2. Validate product is available at kiosk
     product_pids = [p.get("pid") for p in kiosk.products if isinstance(p, dict)]
     if not kiosk.products or request.pid not in product_pids:
         raise ProductNotAvailableException(request.pid, request.kid)
-    
-    qrcode_service.set_payment_info(
-        request.payment_method,
-        request.manager,
-        request.total_price
+
+    # 3. Validate payment method
+    valid_payment_methods = ["kakaopay", "tosspay"]
+    if request.payment_method not in valid_payment_methods:
+        raise InvalidPaymentTypeException(request.payment_method)
+
+    # 4. Validate manager
+    valid_managers = ["KIM", "SOHN", "AHN", "LEE", "HWANG"]
+    if request.manager.upper() not in valid_managers:
+        raise InvalidManagerException(request.manager, valid_managers)
+
+    # 5. Generate QR code (validation already done in router)
+    qr_img_io = qrcode_service.generate_qr_code(
+        payment_method=request.payment_method,
+        manager=request.manager.upper(),
+        amount=request.total_price
     )
-    qr_img_io = qrcode_service.generate_qr_img()
     qr_base64 = base64.b64encode(qr_img_io.getvalue()).decode("utf-8")
 
     payment_data = request.model_dump()
@@ -76,7 +90,7 @@ async def approve_payment(request: PaymentApproveRequest):
     Approve a payment after user completes payment
 
     Args:
-        request (PaymentApproveRequest): Payment approval request with txid
+        PaymentApproveRequest: Payment approval request with txid
 
     Returns:
         PaymentApproveResponse: Success message

@@ -81,7 +81,7 @@ async def update_product(pid: str, product_request: RegisterProductRequest):
 
     Args:
         pid (str): Product ID (e.g., "prod_001")
-        product_request (RegisterProductRequest): Updated product data
+        RegisterProductRequest: Updated product data
 
     Returns:
         UpdateProductResponse: Success message

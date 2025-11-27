@@ -16,7 +16,6 @@ from app.exceptions import (
     ProductNotFoundException,
     ProductDataCorruptedException,
     PaymentException,
-    TransactionStorageException,
     PaymentNotFoundException,
     FirebaseConnectionException,
     FirebaseInitializationException,
@@ -378,20 +377,20 @@ class FirebaseService:
             payment_data['created_at'] = datetime.now(KST)
             payment_data['approved_at'] = None
         except Exception as e:
-            raise TransactionStorageException(txid="N/A", reason=f"Failed to prepare transaction data: {str(e)}") from e
+            raise PaymentException(f"Failed to prepare transaction data: {str(e)}") from e
 
         # 2. Reference Firestore document
         try:
             doc_ref = self.db.collection('transactions').document()
         except Exception as e:
-            raise TransactionStorageException(txid="N/A", reason=f"Failed to get Firestore document reference: {str(e)}") from e
+            raise PaymentException(f"Failed to get Firestore document reference: {str(e)}") from e
 
         # 3. Save transaction to Firebase
         try:
             doc_ref.set(payment_data)
             return doc_ref.id  # txid
         except Exception as e:
-            raise TransactionStorageException(txid="N/A", reason=f"Failed to create transaction in Firebase: {str(e)}") from e
+            raise PaymentException(f"Failed to create transaction in Firebase: {str(e)}") from e
 
     def update_transaction(self, txid: str, updates: Dict[str, Any]) -> None:
         """Update an existing transaction after approval or other events."""
@@ -400,7 +399,7 @@ class FirebaseService:
             doc_ref = self.db.collection('transactions').document(txid)
             doc = doc_ref.get()
         except Exception as e:
-            raise TransactionStorageException(txid=txid, reason=f"Failed to reference transaction: {str(e)}") from e
+            raise PaymentException(f"Failed to reference transaction {txid}: {str(e)}") from e
 
         # 2. Check if transaction exists
         if not doc.exists:
@@ -410,13 +409,13 @@ class FirebaseService:
         try:
             updates['updated_at'] = datetime.now(KST)
         except Exception as e:
-            raise TransactionStorageException(txid=txid, reason=f"Failed to add update timestamp: {str(e)}") from e
+            raise PaymentException(f"Failed to add update timestamp for transaction {txid}: {str(e)}") from e
 
         # 4. Update transaction in Firebase
         try:
             doc_ref.update(updates)
         except Exception as e:
-            raise TransactionStorageException(txid=txid, reason=f"Failed to update transaction in Firebase: {str(e)}") from e
+            raise PaymentException(f"Failed to update transaction {txid} in Firebase: {str(e)}") from e
 
     def get_all_transactions(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
         """Get all transactions from Firebase"""

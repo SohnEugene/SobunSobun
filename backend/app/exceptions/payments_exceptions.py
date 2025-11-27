@@ -9,41 +9,12 @@ class PaymentException(HTTPException):
         )
 
 
-# --- Prepare 단계 관련 ---
-class PaymentPreparationException(PaymentException):
-    """Raised when payment preparation fails (e.g., QR code generation)."""
-    def __init__(self, reason: str):
-        super().__init__(
-            detail=f"Payment preparation failed: {reason}",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-
-class UnsupportedPaymentMethodException(PaymentException):
-    """Raised when an unsupported payment method is requested."""
-    def __init__(self, method: str):
-        super().__init__(
-            detail=f"Payment method '{method}' is not supported.",
-            status_code=status.HTTP_400_BAD_REQUEST
-        )
-
-
 class ProductNotAvailableException(PaymentException):
     """Raised when the product is not available at the specified kiosk."""
     def __init__(self, pid: str, kid: str):
         super().__init__(
             detail=f"Product {pid} is not available at kiosk {kid}",
             status_code=status.HTTP_400_BAD_REQUEST
-        )
-
-
-# --- Approve 단계 관련 ---
-class PaymentApprovalException(PaymentException):
-    """Raised when payment approval fails after user completes the payment."""
-    def __init__(self, txid: str, reason: str):
-        super().__init__(
-            detail=f"Payment approval failed for transaction '{txid}': {reason}",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
 
@@ -66,10 +37,20 @@ class PaymentNotFoundException(PaymentException):
         )
 
 
-class TransactionStorageException(PaymentException):
-    """Raised when saving or updating transaction in DB fails."""
-    def __init__(self, txid: str, reason: str):
+# --- Payment Validation Exceptions (used in Router layer) ---
+class InvalidPaymentTypeException(PaymentException):
+    """Raised when an invalid payment type is provided (validation at router layer)."""
+    def __init__(self, pay_type: str):
         super().__init__(
-            detail=f"Failed to store transaction '{txid}': {reason}",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            detail=f"Invalid payment type: {pay_type}. Must be 'kakaopay' or 'tosspay'",
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class InvalidManagerException(PaymentException):
+    """Raised when an invalid manager is provided (validation at router layer)."""
+    def __init__(self, manager: str, valid_managers: list):
+        super().__init__(
+            detail=f"Invalid manager: {manager}. Must be one of: {', '.join(valid_managers)}",
+            status_code=status.HTTP_400_BAD_REQUEST
         )

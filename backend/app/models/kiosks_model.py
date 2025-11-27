@@ -43,12 +43,5 @@ class AddProductToKioskResponse(BaseModel):
     message: str
 
 
-class UpdateProductStatusRequest(BaseModel):
-    available: bool
-
-class UpdateProductStatusResponse(BaseModel):
-    message: str
-
-
 class DeleteProductFromKioskResponse(BaseModel):
     message: str
