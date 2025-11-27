@@ -181,7 +181,7 @@ body {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-  margin-bottom: 96px;
+  margin-bottom: 64px;
 }
 
 .kiosk-button-container {

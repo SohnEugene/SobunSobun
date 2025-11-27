@@ -22,13 +22,12 @@ export default function ContainerPurchasePage({ onNext, onHome }) {
     <div className="kiosk-page">
       <KioskHeader onHome={onHome} />
       <div className="kiosk-content">
-        <img className="bottle-image" src={bottlesImage} alt="" />
-
         <div className="kiosk-title">
           리필 전용 다회용기를
           <br />
           추가하시겠어요?
         </div>
+        <img className="bottle-image" src={bottlesImage} alt="" />
       </div>
       <div className="kiosk-footer">
         <div className="kiosk-button-container">
