@@ -181,7 +181,7 @@ body {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-  margin-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  margin-bottom: 96px;
 }
 
 .kiosk-button-container {
