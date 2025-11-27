@@ -19,6 +19,7 @@ export default function RefillStartPage({ onNext, onHome }) {
   const [stableWeight, setStableWeight] = useState(false);
   const [devWeight, setDevWeight] = useState(null);
   const weightRef = useRef(0);
+  const productNameRef = useRef(null);
 
   const { session, setBottleWeight, setCombinedWeight, calculateTotalPrice } = useSession();
   const { weight: btWeight, isConnected, isConnecting, connect } = useBluetoothContext();
@@ -111,6 +112,38 @@ export default function RefillStartPage({ onNext, onHome }) {
     calculateTotalPrice(fillWeight);
     if (onNext) onNext();
   }, [displayWeight, session.bottleWeight, setCombinedWeight, calculateTotalPrice, onNext]);
+
+  // 제품명 폰트 크기 동적 조정
+  useEffect(() => {
+    if (!productNameRef.current || step !== REFILL_STEPS.FILL_PRODUCT) return;
+
+    const adjustFontSize = () => {
+      const element = productNameRef.current;
+
+      // 뷰포트 너비에서 kiosk-content의 padding(64px * 2)을 뺀 값을 사용
+      const availableWidth = window.innerWidth - (64 * 2);
+
+      let fontSize = 72; // 최대 폰트 크기
+      element.style.fontSize = `${fontSize}px`;
+
+      // 텍스트가 사용 가능한 너비를 넘지 않을 때까지 폰트 크기 감소
+      while (element.scrollWidth > availableWidth && fontSize > 24) {
+        fontSize -= 2;
+        element.style.fontSize = `${fontSize}px`;
+      }
+
+      console.log('🔧 [FontSize] 제품명:', session.selectedProduct?.name);
+      console.log('🔧 [FontSize] 뷰포트 너비:', window.innerWidth);
+      console.log('🔧 [FontSize] 사용 가능 너비:', availableWidth);
+      console.log('🔧 [FontSize] 텍스트 너비:', element.scrollWidth);
+      console.log('🔧 [FontSize] 최종 폰트 크기:', fontSize);
+    };
+
+    // 약간의 지연을 주어 DOM이 완전히 렌더링되도록 함
+    setTimeout(adjustFontSize, 0);
+    window.addEventListener('resize', adjustFontSize);
+    return () => window.removeEventListener('resize', adjustFontSize);
+  }, [step, session.selectedProduct?.name]);
 
   // 치트키: x 키로 단계별 시뮬레이션
   useEffect(() => {
@@ -226,10 +259,11 @@ export default function RefillStartPage({ onNext, onHome }) {
         return (
           <div className="kiosk-content">
             <div className="kiosk-content-header">
+              <h1 className="product-name" ref={productNameRef}>
+                {session.selectedProduct?.name}
+              </h1>
               <h1 className="kiosk-title-light">
-                이제 제품을 리필하시고
-                <br />
-                병을 다시 올려주세요
+                를 리필하시고 저울에 올려주세요
               </h1>
             </div>
             <ScaleDisplay showBottle />

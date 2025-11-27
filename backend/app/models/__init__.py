@@ -15,8 +15,6 @@ from app.models.kiosks_model import (
     AddProductToKioskRequest,
     AddProductToKioskResponse,
     GetKioskProductsResponse,
-    UpdateProductStatusRequest,
-    UpdateProductStatusResponse,
     DeleteKioskResponse,
     DeleteProductFromKioskResponse
 )
@@ -49,8 +47,6 @@ __all__ = [
     "AddProductToKioskRequest",
     "AddProductToKioskResponse",
     "GetKioskProductsResponse",
-    "UpdateProductStatusRequest",
-    "UpdateProductStatusResponse",
     "DeleteKioskResponse",
     "DeleteProductFromKioskResponse",
     # Product

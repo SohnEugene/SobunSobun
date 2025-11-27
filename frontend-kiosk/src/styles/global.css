@@ -153,6 +153,7 @@ body {
   flex-direction: column;
   gap: 8px;
   margin-bottom: 32px;
+  width: 100%;
 }
 
 .kiosk-content-center {
