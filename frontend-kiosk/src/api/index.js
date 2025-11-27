@@ -11,6 +11,7 @@ export {
 
 export {
   registerKiosk,
+  getKiosk,
   getKioskProducts,
   addProductToKiosk,
   deleteProductFromKiosk

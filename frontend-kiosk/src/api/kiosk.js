@@ -15,6 +15,15 @@ export async function registerKiosk(kioskData) {
 }
 
 /**
+ * 키오스크 정보 조회 (제품 ID 목록 포함)
+ * @param {string} kioskId - 키오스크 ID
+ * @returns {Promise<{kid: string, name: string, location: string, status: string, products: Array<string>}>}
+ */
+export async function getKiosk(kioskId) {
+  return request(`/kiosks/${kioskId}`);
+}
+
+/**
  * 키오스크의 제품 목록 조회
  * @param {string} kioskId - 키오스크 ID
  * @returns {Promise<{products: Array<{product: Object, available: boolean}>}>}

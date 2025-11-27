@@ -11,6 +11,7 @@
   flex-direction: column;
   height: 100vh;
   background-color: var(--color-white);
+  padding-bottom: 120px;
 }
 
 .home-header {
@@ -79,6 +80,18 @@
 /* ============================================================
    RefillPage
    ============================================================ */
+
+.bluetooth-warning {
+  margin-top: 16px;
+  padding: 16px 24px;
+  background-color: rgba(255, 193, 7, 0.2);
+  border: 2px solid rgba(255, 193, 7, 0.6);
+  border-radius: 12px;
+  color: var(--color-white);
+  font-size: 18px;
+  line-height: 1.6;
+  text-align: center;
+}
 
 .product-name {
   font-size: 72px;

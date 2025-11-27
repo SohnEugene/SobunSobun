@@ -208,6 +208,15 @@ export function useBluetooth({ saveToStorage = false } = {}) {
     setError(null);
 
     try {
+      // Web Bluetooth API 지원 확인
+      if (!navigator.bluetooth) {
+        throw new Error(
+          "이 브라우저는 Web Bluetooth를 지원하지 않습니다. " +
+          "Chrome 브라우저에서 https://로 접속하거나, " +
+          "Fully Kiosk 앱의 설정에서 'Use System Webview' 또는 'Use Chrome Engine'을 활성화해주세요."
+        );
+      }
+
       // 모든 블루투스 장치 표시 (필터 없음)
       console.log("🔍 [BLE] 모든 블루투스 장치 표시");
       const requestOptions = {

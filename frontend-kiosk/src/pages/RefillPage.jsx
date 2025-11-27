@@ -212,6 +212,13 @@ export default function RefillStartPage({ onNext, onHome }) {
               <div className="kiosk-subtitle-light">
                 블루투스로 무게 데이터를 받아옵니다
               </div>
+              {!navigator.bluetooth && (
+                <div className="bluetooth-warning">
+                  ⚠️ Web Bluetooth가 지원되지 않습니다.<br/>
+                  Chrome 브라우저를 사용하거나 Fully Kiosk 설정에서<br/>
+                  'Use Chrome Engine'을 활성화해주세요.
+                </div>
+              )}
             </div>
             <ScaleDisplay />
             <Button
