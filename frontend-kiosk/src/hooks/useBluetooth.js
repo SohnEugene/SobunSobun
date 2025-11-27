@@ -13,12 +13,14 @@
  */
 
 import { useState, useRef, useCallback } from "react";
-import { SCALE_SERVICE_UUID, SCALE_CHAR_UUID } from "../constants/bluetooth";
 import {
   saveBluetoothDevice,
   clearBluetoothDevice,
   getBluetoothDevice,
-} from "../services/bluetoothStorage";
+} from "../storage/bluetooth";
+
+const SCALE_SERVICE_UUID = "0000fff0-0000-1000-8000-00805f9b34fb";
+const SCALE_CHAR_UUID = "0000fff1-0000-1000-8000-00805f9b34fb";
 
 /**
  * useBluetooth - BLE 장치 연결 및 데이터 수신을 위한 React Hook
@@ -162,12 +164,15 @@ export function useBluetooth({ saveToStorage = false } = {}) {
    */
   const parseWeight = useCallback((value) => {
     // ArrayBuffer → Hex String
+    console.log(value);
     const hexStr = Array.from(new Uint8Array(value.buffer))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
+    console.log(hexStr);
 
     // 저울 프로토콜 상 유효 데이터 추출
     const middleHex = hexStr.slice(16, 28).replace(/^0+/, "");
+    console.log(middleHex);
     return middleHex ? parseInt(middleHex, 16) : 0;
   }, []);
 

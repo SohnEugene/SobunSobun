@@ -4,20 +4,20 @@ import {
   registerKiosk,
   getKioskProducts,
   addProductToKiosk,
-  removeProductFromKiosk,
+  deleteProductFromKiosk,
   getProducts,
-} from "../services/api";
+} from "../api";
 import {
   saveKioskInfo,
   getKioskInfo,
   clearKioskInfo,
-} from "../services/kioskStorage";
+} from "../storage/kiosk";
 import {
   MANAGERS,
   saveManagerInfo,
   getManagerInfo,
   clearManagerInfo,
-} from "../services/managerStorage";
+} from "../storage/manager";
 import { useBluetoothContext } from "../contexts/BluetoothContext";
 import HomeView from "../components/management/HomeView";
 import RegisterView from "../components/management/RegisterView";
@@ -137,7 +137,7 @@ export default function ManagementPage() {
   const handleToggleProduct = async (productId, isCurrentlySelected) => {
     try {
       if (isCurrentlySelected) {
-        await removeProductFromKiosk(registeredInfo.kid, productId);
+        await deleteProductFromKiosk(registeredInfo.kid, productId);
       } else {
         await addProductToKiosk(registeredInfo.kid, productId);
       }
