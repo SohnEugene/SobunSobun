@@ -1,6 +1,6 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 import HomePage from "./pages/HomePage";
 import ProductSelectionPage from "./pages/ProductSelectionPage";
@@ -48,6 +48,38 @@ function KioskFlow() {
   const [currentPage, setCurrentPage] = useState("home");
   const { resetSession } = useSession();
 
+  // 전체화면 모드 진입
+  useEffect(() => {
+    const enterFullscreen = async () => {
+      try {
+        // 전체화면 API 지원 확인
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+          console.log("✅ [Fullscreen] 전체화면 모드 활성화");
+        }
+      } catch (err) {
+        console.warn("⚠️ [Fullscreen] 전체화면 모드 진입 실패:", err);
+      }
+    };
+
+    // 사용자 인터랙션 후 전체화면 진입
+    const handleInteraction = () => {
+      enterFullscreen();
+      // 한 번만 실행하도록 이벤트 리스너 제거
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
+
+    // 클릭 또는 터치 이벤트 대기
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('touchstart', handleInteraction);
+    };
+  }, []);
+
   // 페이지 전환 핸들러
   const goToPage = useCallback((page) => setCurrentPage(page), []);
 
@@ -55,7 +87,7 @@ function KioskFlow() {
     resetSession();
     setCurrentPage("home");
   }, [resetSession]);
-  
+
   const goToNextPage = useCallback(() => {
     const nextIndex = KIOSK_ORDER.indexOf(currentPage) + 1;
     if (nextIndex < KIOSK_ORDER.length) setCurrentPage(KIOSK_ORDER[nextIndex]);
