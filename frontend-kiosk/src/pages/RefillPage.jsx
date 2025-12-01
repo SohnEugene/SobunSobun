@@ -5,6 +5,7 @@ import "../styles/pages.css";
 import { useSession } from "../contexts/SessionContext";
 import { useBluetoothContext } from "../contexts/BluetoothContext";
 import scaleImg from "../assets/images/measurement.png";
+import pairImg from "../assets/images/pair.png"
 import { useSound } from "../contexts/SoundContext";
 
 const REFILL_STEPS = {
@@ -224,7 +225,7 @@ export default function RefillStartPage({ onNext, onHome }) {
         return (
           <div className="kiosk-content">
             <div className="kiosk-content-header">
-              <h1 className="kiosk-title-light">저울을 연결해주세요</h1>
+              <h1 className="kiosk-title-light">버튼을 눌러 "Gotobake" <br/> 저울을 연결해주세요</h1>
               <div className="kiosk-subtitle-light">
                 블루투스로 무게 데이터를 받아옵니다
               </div>
@@ -236,7 +237,7 @@ export default function RefillStartPage({ onNext, onHome }) {
                 </div>
               )}
             </div>
-            <ScaleDisplay />
+            <img src={pairImg} alt="연결 안내" />
             <Button
               variant="small"
               onClick={connect}
