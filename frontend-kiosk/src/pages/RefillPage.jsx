@@ -258,7 +258,7 @@ export default function RefillStartPage({ onNext, onHome }) {
                 저울에 올려주세요
               </h1>
               <div className="kiosk-subtitle-light">
-                저울의 영점이 맞춰져 있는지 꼭 확인!
+                저울의 영점이 맞춰져 있는지 꼭 확인! <br/> (TARE 버튼 클릭)
               </div>
             </div>
             <ScaleDisplay />
