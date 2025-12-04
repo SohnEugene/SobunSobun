@@ -110,6 +110,14 @@
   margin-top: 24px;
 }
 
+.pair-img {
+  width: 50vw;
+  max-width: 600px;
+  height: auto;
+  margin: 32px 0;
+  object-fit: contain;
+}
+
 .refill-weight-display {
   padding: 16px 32px;
   background-color: rgba(0, 0, 0, 0.2);

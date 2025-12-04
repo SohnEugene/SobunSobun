@@ -241,7 +241,7 @@ export default function RefillStartPage({ onNext, onHome }) {
                 </div>
               )}
             </div>
-            <img src={pairImg} alt="연결 안내" />
+            <img className="pair-img" src={pairImg} alt="연결 안내" />
             <Button
               variant="small"
               onClick={connect}
