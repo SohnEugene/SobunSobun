@@ -45,9 +45,6 @@ export default function PaymentCompletePage({ onHome }) {
       <KioskHeader onHome={onHome} />
       <div className="kiosk-content">
         <div className="kiosk-title">리필이 완료되었습니다.</div>
-        <div className="kiosk-subtitle">
-          실제로 결제를 진행했다면...
-        </div>
 
         {savings && (
           <div className="savings-info">

@@ -324,7 +324,7 @@ export default function RefillStartPage({ onNext, onHome }) {
             onClick={handleFillComplete}
             disabled={!stableWeight}
           >
-            리필 완료
+            결제하기
           </Button>
         );
 

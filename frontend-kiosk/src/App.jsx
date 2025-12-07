@@ -40,9 +40,8 @@ const KIOSK_ORDER = [
   "container",
   "containerPurchase",
   "refill",
-  "tempPaymentProcessing",
-  //"paymentMethod",
-  //"paymentProcessing",
+  "paymentMethod",
+  "paymentProcessing",
   "paymentComplete",
 ];
 
