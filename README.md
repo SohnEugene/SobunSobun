@@ -105,7 +105,8 @@
 - **대시보드 제공**: Transaction History, Product Management 통합 관리
 - **원격 설정 가능**: 제품 추가/수정/삭제 원격 관리
 
----
+<br>
+<br>
 
 ## 5. 유저 테스트 결과
 
