@@ -62,7 +62,10 @@ function KioskFlow() {
     const enterFullscreen = async () => {
       try {
         // 전체화면 API 지원 확인
-        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        if (
+          !document.fullscreenElement &&
+          document.documentElement.requestFullscreen
+        ) {
           await document.documentElement.requestFullscreen();
         }
       } catch (err) {
@@ -74,29 +77,32 @@ function KioskFlow() {
     const handleInteraction = () => {
       enterFullscreen();
       // 한 번만 실행하도록 이벤트 리스너 제거
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
     };
 
     // 클릭 또는 터치 이벤트 대기
-    document.addEventListener('click', handleInteraction);
-    document.addEventListener('touchstart', handleInteraction);
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
 
     return () => {
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
     };
   }, []);
 
   // 페이지 전환 핸들러
-  const goToPage = useCallback((page) => {
-    // 페이지 전환 시 해당 페이지의 사운드 자동 재생
-    const soundId = PAGE_SOUNDS[page];
-    if (soundId) {
-      playSound(soundId);
-    }
-    setCurrentPage(page);
-  }, [playSound]);
+  const goToPage = useCallback(
+    (page) => {
+      // 페이지 전환 시 해당 페이지의 사운드 자동 재생
+      const soundId = PAGE_SOUNDS[page];
+      if (soundId) {
+        playSound(soundId);
+      }
+      setCurrentPage(page);
+    },
+    [playSound],
+  );
 
   const resetToHome = useCallback(() => {
     resetSession();
@@ -118,16 +124,9 @@ function KioskFlow() {
 
   // 페이지 맵 정의
   const pages = {
-    home: (
-      <HomePage 
-        onNext={goToNextPage} 
-      />
-    ),
+    home: <HomePage onNext={goToNextPage} />,
     product: (
-      <ProductSelectionPage 
-        onNext={goToNextPage} 
-        onHome={resetToHome} 
-      />
+      <ProductSelectionPage onNext={goToNextPage} onHome={resetToHome} />
     ),
     container: (
       <ContainerCheckPage
@@ -142,28 +141,14 @@ function KioskFlow() {
         onHome={resetToHome}
       />
     ),
-    refill: (
-      <RefillPage
-        onNext={goToNextPage}
-        onHome={resetToHome}
-      />
-    ),
+    refill: <RefillPage onNext={goToNextPage} onHome={resetToHome} />,
     paymentMethod: (
-      <PaymentMethodPage
-        onNext={goToNextPage}
-        onHome={resetToHome}
-      />
+      <PaymentMethodPage onNext={goToNextPage} onHome={resetToHome} />
     ),
     paymentProcessing: (
-      <PaymentProcessingPage
-        onNext={goToNextPage}
-        onHome={resetToHome}
-      />
+      <PaymentProcessingPage onNext={goToNextPage} onHome={resetToHome} />
     ),
-    paymentComplete: (
-      <PaymentCompletePage
-        onHome={resetToHome}
-      />),
+    paymentComplete: <PaymentCompletePage onHome={resetToHome} />,
   };
 
   return <main className="kiosk-shell">{pages[currentPage]}</main>;

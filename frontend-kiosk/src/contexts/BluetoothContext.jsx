@@ -35,7 +35,7 @@ export function useBluetoothContext() {
   if (!context) {
     throw new Error(
       "useBluetoothContext must be used within a BluetoothProvider. " +
-      "Wrap your component tree with <BluetoothProvider>."
+        "Wrap your component tree with <BluetoothProvider>.",
     );
   }
 

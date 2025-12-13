@@ -3,7 +3,14 @@
  * 안내 음성 파일을 미리 로드하고 재생을 관리
  */
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 
 // 사운드 파일 임포트
 import refillStartVoice from "../assets/voices/리필시작.mp3";
@@ -23,7 +30,11 @@ function log(level, message, ...args) {
   };
 
   const prefix = `${emoji[level] || "🔊"} [Sound]`;
-  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](prefix, message, ...args);
+  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+    prefix,
+    message,
+    ...args,
+  );
 }
 
 // ============================================================
@@ -66,16 +77,19 @@ export function SoundProvider({ children }) {
 
   // 컴포넌트 마운트 시 모든 사운드 파일을 미리 로드
   useEffect(() => {
-    playersRef.current = Object.entries(SOUND_SOURCES).reduce((acc, [key, src]) => {
-      const audio = new Audio(src);
-      audio.preload = "auto";
-      acc[key] = audio;
-      return acc;
-    }, {});
+    playersRef.current = Object.entries(SOUND_SOURCES).reduce(
+      (acc, [key, src]) => {
+        const audio = new Audio(src);
+        audio.preload = "auto";
+        acc[key] = audio;
+        return acc;
+      },
+      {},
+    );
 
     // Cleanup: 언마운트 시 모든 오디오 리소스 정리
     return () => {
-      Object.values(playersRef.current).forEach(audio => {
+      Object.values(playersRef.current).forEach((audio) => {
         audio.pause();
         audio.src = "";
       });
@@ -123,7 +137,9 @@ export function SoundProvider({ children }) {
 
   const value = useMemo(() => ({ playSound }), [playSound]);
 
-  return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
+  return (
+    <SoundContext.Provider value={value}>{children}</SoundContext.Provider>
+  );
 }
 
 /**
@@ -142,7 +158,7 @@ export function useSound() {
   if (!context) {
     throw new Error(
       "useSound must be used within a SoundProvider. " +
-      "SoundProvider로 컴포넌트 트리를 감싸주세요."
+        "SoundProvider로 컴포넌트 트리를 감싸주세요.",
     );
   }
 

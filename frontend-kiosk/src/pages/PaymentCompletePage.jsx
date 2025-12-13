@@ -15,12 +15,17 @@ export default function PaymentCompletePage({ onHome }) {
   const calculateSavings = () => {
     const { selectedProduct, weight, totalPrice } = session;
 
-    if (!selectedProduct?.original_price || !selectedProduct?.original_gram || weight === 0) {
+    if (
+      !selectedProduct?.original_price ||
+      !selectedProduct?.original_gram ||
+      weight === 0
+    ) {
       return null;
     }
 
     // 일반 제품을 같은 무게만큼 구매했을 때의 가격
-    const originalTotalPrice = (selectedProduct.original_price / selectedProduct.original_gram) * weight;
+    const originalTotalPrice =
+      (selectedProduct.original_price / selectedProduct.original_gram) * weight;
 
     // 절약 금액
     const savedAmount = originalTotalPrice - totalPrice;
@@ -30,14 +35,16 @@ export default function PaymentCompletePage({ onHome }) {
 
     return {
       savedAmount: Math.round(savedAmount),
-      savedPercent: Math.round(savedPercent)
+      savedPercent: Math.round(savedPercent),
     };
   };
 
   const savings = calculateSavings();
 
   const originalTotalPrice = savings
-    ? (session.selectedProduct.original_price / session.selectedProduct.original_gram) * session.weight
+    ? (session.selectedProduct.original_price /
+        session.selectedProduct.original_gram) *
+      session.weight
     : 0;
 
   return (
@@ -51,11 +58,15 @@ export default function PaymentCompletePage({ onHome }) {
             <div className="price-comparison">
               <div className="price-row">
                 <span className="price-label">일반 제품 구매 시</span>
-                <span className="price-value original">₩{Math.round(originalTotalPrice).toLocaleString()}</span>
+                <span className="price-value original">
+                  ₩{Math.round(originalTotalPrice).toLocaleString()}
+                </span>
               </div>
               <div className="price-row">
                 <span className="price-label">리필 제품 구매 시</span>
-                <span className="price-value refill">₩{session.totalPrice.toLocaleString()}</span>
+                <span className="price-value refill">
+                  ₩{session.totalPrice.toLocaleString()}
+                </span>
               </div>
             </div>
             <div className="savings-summary">
@@ -70,7 +81,7 @@ export default function PaymentCompletePage({ onHome }) {
         )}
 
         <div className="kiosk-subtitle">
-          나도 좋고 환경도 좋은 리필, <br/> 많은 참여 부탁드립니다!
+          나도 좋고 환경도 좋은 리필, <br /> 많은 참여 부탁드립니다!
         </div>
       </div>
       <div className="kiosk-footer">

@@ -14,26 +14,24 @@ export default function KioskHeader({ onHome, variant = "default" }) {
     }
   };
 
-  const buttonClass = variant === "light"
-    ? "kiosk-home-button kiosk-home-button-light"
-    : "kiosk-home-button";
+  const buttonClass =
+    variant === "light"
+      ? "kiosk-home-button kiosk-home-button-light"
+      : "kiosk-home-button";
 
-  const logoClass = variant === "light"
-    ? "kiosk-header-logo kiosk-header-logo-light"
-    : "kiosk-header-logo";
+  const logoClass =
+    variant === "light"
+      ? "kiosk-header-logo kiosk-header-logo-light"
+      : "kiosk-header-logo";
 
   return (
     <div className="kiosk-header">
       <div className={logoClass}>
-        <img src={logoBlack} className="logo1"/>
+        <img src={logoBlack} className="logo1" />
         <span>×</span>
-        <img src={almangLogo} className="logo2"/>
+        <img src={almangLogo} className="logo2" />
       </div>
-      <button
-        type="button"
-        className={buttonClass}
-        onClick={handleHomeClick}
-      >
+      <button type="button" className={buttonClass} onClick={handleHomeClick}>
         처음 화면으로
       </button>
     </div>

@@ -43,7 +43,11 @@ function log(level, message, ...args) {
   };
 
   const prefix = `${emoji[level] || "📝"} [BLE]`;
-  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](prefix, message, ...args);
+  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+    prefix,
+    message,
+    ...args,
+  );
 }
 
 function parseWeight(value) {
@@ -55,7 +59,7 @@ function parseWeight(value) {
 }
 
 async function waitFor(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ============================================================
@@ -92,49 +96,57 @@ export function useBluetooth({ saveToStorage = false } = {}) {
     }
   }, []);
 
-  const startReconnection = useCallback((device, onSuccess) => {
-    if (reconnectIntervalRef.current) {
-      log("debug", "이미 재연결 시도 중");
-      return;
-    }
-
-    log("reconnecting", "자동 재연결 시작");
-    reconnectAttemptsRef.current = 0;
-
-    reconnectIntervalRef.current = setInterval(async () => {
-      if (!device || !deviceRef.current) {
-        stopReconnection();
+  const startReconnection = useCallback(
+    (device, onSuccess) => {
+      if (reconnectIntervalRef.current) {
+        log("debug", "이미 재연결 시도 중");
         return;
       }
 
-      if (device.gatt?.connected) {
-        log("debug", "이미 연결됨");
-        stopReconnection();
-        return;
-      }
+      log("reconnecting", "자동 재연결 시작");
+      reconnectAttemptsRef.current = 0;
 
-      reconnectAttemptsRef.current += 1;
-      const attempt = reconnectAttemptsRef.current;
+      reconnectIntervalRef.current = setInterval(async () => {
+        if (!device || !deviceRef.current) {
+          stopReconnection();
+          return;
+        }
 
-      if (attempt > RECONNECT_CONFIG.maxAttempts) {
-        log("warn", `재연결 시도 ${RECONNECT_CONFIG.maxAttempts}회 초과`);
-        setIsConnecting(false);
-        setError("자동 연결 실패. '저울 연결하기' 버튼을 눌러주세요.");
-        stopReconnection();
-        return;
-      }
+        if (device.gatt?.connected) {
+          log("debug", "이미 연결됨");
+          stopReconnection();
+          return;
+        }
 
-      log("reconnecting", `재연결 시도 중... (${attempt}/${RECONNECT_CONFIG.maxAttempts})`);
-      setIsConnecting(true);
-      setError(`재연결 시도 중... (${attempt}/${RECONNECT_CONFIG.maxAttempts})`);
+        reconnectAttemptsRef.current += 1;
+        const attempt = reconnectAttemptsRef.current;
 
-      const success = await onSuccess(device, true);
+        if (attempt > RECONNECT_CONFIG.maxAttempts) {
+          log("warn", `재연결 시도 ${RECONNECT_CONFIG.maxAttempts}회 초과`);
+          setIsConnecting(false);
+          setError("자동 연결 실패. '저울 연결하기' 버튼을 눌러주세요.");
+          stopReconnection();
+          return;
+        }
 
-      if (success) {
-        stopReconnection();
-      }
-    }, RECONNECT_CONFIG.interval);
-  }, [stopReconnection]);
+        log(
+          "reconnecting",
+          `재연결 시도 중... (${attempt}/${RECONNECT_CONFIG.maxAttempts})`,
+        );
+        setIsConnecting(true);
+        setError(
+          `재연결 시도 중... (${attempt}/${RECONNECT_CONFIG.maxAttempts})`,
+        );
+
+        const success = await onSuccess(device, true);
+
+        if (success) {
+          stopReconnection();
+        }
+      }, RECONNECT_CONFIG.interval);
+    },
+    [stopReconnection],
+  );
 
   // ============================================================
   // 이벤트 리스너 정리
@@ -143,7 +155,10 @@ export function useBluetooth({ saveToStorage = false } = {}) {
     // Disconnect handler
     if (deviceRef.current && handlersRef.current.disconnect) {
       try {
-        deviceRef.current.removeEventListener("gattserverdisconnected", handlersRef.current.disconnect);
+        deviceRef.current.removeEventListener(
+          "gattserverdisconnected",
+          handlersRef.current.disconnect,
+        );
       } catch (err) {
         log("debug", "Disconnect 리스너 제거 실패 (무시):", err);
       }
@@ -153,7 +168,10 @@ export function useBluetooth({ saveToStorage = false } = {}) {
     // Characteristic value handler
     if (characteristicRef.current && handlersRef.current.characteristicValue) {
       try {
-        characteristicRef.current.removeEventListener("characteristicvaluechanged", handlersRef.current.characteristicValue);
+        characteristicRef.current.removeEventListener(
+          "characteristicvaluechanged",
+          handlersRef.current.characteristicValue,
+        );
       } catch (err) {
         log("debug", "Characteristic 리스너 제거 실패 (무시):", err);
       }
@@ -164,106 +182,114 @@ export function useBluetooth({ saveToStorage = false } = {}) {
   // ============================================================
   // GATT 연결 로직
   // ============================================================
-  const connectToDevice = useCallback(async (device, isReconnecting = false) => {
-    try {
-      log("connecting", `GATT 연결 시도: ${device.name || device.id}`);
+  const connectToDevice = useCallback(
+    async (device, isReconnecting = false) => {
+      try {
+        log("connecting", `GATT 연결 시도: ${device.name || device.id}`);
 
-      // 재연결 시 기존 GATT 연결 해제
-      if (isReconnecting && device.gatt?.connected) {
-        log("debug", "기존 GATT 연결 해제 후 재연결");
-        try {
-          device.gatt.disconnect();
-          await waitFor(RECONNECT_CONFIG.disconnectDelay);
-        } catch (err) {
-          log("debug", "기존 연결 해제 실패 (무시):", err.message);
-        }
-      }
-
-      // Disconnect handler 등록 (재연결이 아닐 때만)
-      if (!isReconnecting) {
-        const handleDisconnect = () => {
-          log("disconnected", "장치 연결 끊어짐");
-          setIsConnected(false);
-          setIsConnecting(false);
-          setError("장치 연결이 끊어졌습니다. 재연결 시도 중...");
-          characteristicRef.current = null;
-
-          // 자동 재연결 시작
-          if (deviceRef.current) {
-            startReconnection(deviceRef.current, connectToDevice);
+        // 재연결 시 기존 GATT 연결 해제
+        if (isReconnecting && device.gatt?.connected) {
+          log("debug", "기존 GATT 연결 해제 후 재연결");
+          try {
+            device.gatt.disconnect();
+            await waitFor(RECONNECT_CONFIG.disconnectDelay);
+          } catch (err) {
+            log("debug", "기존 연결 해제 실패 (무시):", err.message);
           }
+        }
+
+        // Disconnect handler 등록 (재연결이 아닐 때만)
+        if (!isReconnecting) {
+          const handleDisconnect = () => {
+            log("disconnected", "장치 연결 끊어짐");
+            setIsConnected(false);
+            setIsConnecting(false);
+            setError("장치 연결이 끊어졌습니다. 재연결 시도 중...");
+            characteristicRef.current = null;
+
+            // 자동 재연결 시작
+            if (deviceRef.current) {
+              startReconnection(deviceRef.current, connectToDevice);
+            }
+          };
+
+          cleanupListeners(); // 기존 리스너 정리
+          handlersRef.current.disconnect = handleDisconnect;
+          device.addEventListener("gattserverdisconnected", handleDisconnect);
+        }
+
+        // GATT 연결
+        const server = await device.gatt.connect();
+        log("success", "GATT 서버 연결 성공");
+
+        deviceRef.current = device;
+        setDeviceName(device.name || "Unknown Device");
+
+        // 서비스 및 Characteristic 검색
+        log("debug", "서비스 검색 중...");
+        const service = await server.getPrimaryService(SCALE_SERVICE_UUID);
+
+        log("debug", "Characteristic 검색 중...");
+        const characteristic = await service.getCharacteristic(SCALE_CHAR_UUID);
+        characteristicRef.current = characteristic;
+
+        // Notification 시작
+        if (!characteristic.properties.notify) {
+          throw new Error("이 장치는 알림을 지원하지 않습니다.");
+        }
+
+        const handleValue = (e) => {
+          const newWeight = parseWeight(e.target.value);
+          const adjustedWeight = Math.round(newWeight / 100);
+          setWeight(adjustedWeight);
         };
 
-        cleanupListeners(); // 기존 리스너 정리
-        handlersRef.current.disconnect = handleDisconnect;
-        device.addEventListener("gattserverdisconnected", handleDisconnect);
-      }
+        await characteristic.startNotifications();
 
-      // GATT 연결
-      const server = await device.gatt.connect();
-      log("success", "GATT 서버 연결 성공");
-
-      deviceRef.current = device;
-      setDeviceName(device.name || "Unknown Device");
-
-      // 서비스 및 Characteristic 검색
-      log("debug", "서비스 검색 중...");
-      const service = await server.getPrimaryService(SCALE_SERVICE_UUID);
-
-      log("debug", "Characteristic 검색 중...");
-      const characteristic = await service.getCharacteristic(SCALE_CHAR_UUID);
-      characteristicRef.current = characteristic;
-
-      // Notification 시작
-      if (!characteristic.properties.notify) {
-        throw new Error("이 장치는 알림을 지원하지 않습니다.");
-      }
-
-      const handleValue = (e) => {
-        const newWeight = parseWeight(e.target.value);
-        const adjustedWeight = Math.round(newWeight / 100);
-        setWeight(adjustedWeight);
-      };
-
-      await characteristic.startNotifications();
-
-      // 기존 리스너 정리 후 새 리스너 등록
-      if (handlersRef.current.characteristicValue) {
-        characteristic.removeEventListener("characteristicvaluechanged", handlersRef.current.characteristicValue);
-      }
-      handlersRef.current.characteristicValue = handleValue;
-      characteristic.addEventListener("characteristicvaluechanged", handleValue);
-
-      // 연결 완료
-      log("success", "연결 완료!");
-      setIsConnected(true);
-      setIsConnecting(false);
-      setError(null);
-
-      // 저장소 업데이트
-      if (saveToStorage) {
-        saveBluetoothDevice({ id: device.id, name: device.name });
-      }
-
-      return true;
-
-    } catch (err) {
-      log("error", "GATT 연결 실패:", err);
-      setError(err.message || "저울 연결 실패");
-      setIsConnecting(false);
-
-      // 연결 실패 시 정리
-      try {
-        if (device?.gatt?.connected) {
-          device.gatt.disconnect();
+        // 기존 리스너 정리 후 새 리스너 등록
+        if (handlersRef.current.characteristicValue) {
+          characteristic.removeEventListener(
+            "characteristicvaluechanged",
+            handlersRef.current.characteristicValue,
+          );
         }
-      } catch (disconnectErr) {
-        log("debug", "연결 해제 실패 (무시):", disconnectErr);
-      }
+        handlersRef.current.characteristicValue = handleValue;
+        characteristic.addEventListener(
+          "characteristicvaluechanged",
+          handleValue,
+        );
 
-      return false;
-    }
-  }, [saveToStorage, startReconnection, cleanupListeners]);
+        // 연결 완료
+        log("success", "연결 완료!");
+        setIsConnected(true);
+        setIsConnecting(false);
+        setError(null);
+
+        // 저장소 업데이트
+        if (saveToStorage) {
+          saveBluetoothDevice({ id: device.id, name: device.name });
+        }
+
+        return true;
+      } catch (err) {
+        log("error", "GATT 연결 실패:", err);
+        setError(err.message || "저울 연결 실패");
+        setIsConnecting(false);
+
+        // 연결 실패 시 정리
+        try {
+          if (device?.gatt?.connected) {
+            device.gatt.disconnect();
+          }
+        } catch (disconnectErr) {
+          log("debug", "연결 해제 실패 (무시):", disconnectErr);
+        }
+
+        return false;
+      }
+    },
+    [saveToStorage, startReconnection, cleanupListeners],
+  );
 
   // ============================================================
   // 자동 재연결 (마운트 시)
@@ -277,7 +303,10 @@ export function useBluetooth({ saveToStorage = false } = {}) {
 
       if (!navigator.bluetooth.getDevices) {
         log("warn", "getDevices() 미지원 - 자동 재연결 불가");
-        log("info", "Tip: Chrome 85+ 필요. chrome://flags에서 활성화하거나 Fully Kiosk Browser 사용");
+        log(
+          "info",
+          "Tip: Chrome 85+ 필요. chrome://flags에서 활성화하거나 Fully Kiosk Browser 사용",
+        );
         return;
       }
 
@@ -297,9 +326,12 @@ export function useBluetooth({ saveToStorage = false } = {}) {
         if (saveToStorage) {
           const lastDevice = getBluetoothDevice();
           if (lastDevice) {
-            targetDevice = devices.find(d => d.id === lastDevice.id);
+            targetDevice = devices.find((d) => d.id === lastDevice.id);
             if (!targetDevice) {
-              log("info", "저장된 기기 ID와 일치하는 기기 없음. 첫 번째 기기 사용");
+              log(
+                "info",
+                "저장된 기기 ID와 일치하는 기기 없음. 첫 번째 기기 사용",
+              );
               targetDevice = devices[0];
             }
           } else {
@@ -346,7 +378,13 @@ export function useBluetooth({ saveToStorage = false } = {}) {
         }
       }
     };
-  }, [connectToDevice, startReconnection, stopReconnection, cleanupListeners, saveToStorage]);
+  }, [
+    connectToDevice,
+    startReconnection,
+    stopReconnection,
+    cleanupListeners,
+    saveToStorage,
+  ]);
 
   // ============================================================
   // 외부 노출 함수: 수동 연결
@@ -372,9 +410,11 @@ export function useBluetooth({ saveToStorage = false } = {}) {
       log("success", `사용자가 기기 선택: ${device.name}`);
 
       await connectToDevice(device);
-
     } catch (err) {
-      if (err.name === "NotFoundError" || err.message.includes("User cancelled")) {
+      if (
+        err.name === "NotFoundError" ||
+        err.message.includes("User cancelled")
+      ) {
         log("info", "사용자 취소");
       } else {
         log("error", "수동 연결 실패:", err);
@@ -387,36 +427,39 @@ export function useBluetooth({ saveToStorage = false } = {}) {
   // ============================================================
   // 외부 노출 함수: 연결 해제
   // ============================================================
-  const disconnect = useCallback((clearStorage = false) => {
-    log("info", "연결 해제 시도");
+  const disconnect = useCallback(
+    (clearStorage = false) => {
+      log("info", "연결 해제 시도");
 
-    stopReconnection();
-    cleanupListeners();
+      stopReconnection();
+      cleanupListeners();
 
-    // GATT 연결 해제
-    if (deviceRef.current?.gatt?.connected) {
-      try {
-        deviceRef.current.gatt.disconnect();
-        log("success", "GATT 연결 해제 완료");
-      } catch (err) {
-        log("warn", "GATT 연결 해제 실패:", err);
+      // GATT 연결 해제
+      if (deviceRef.current?.gatt?.connected) {
+        try {
+          deviceRef.current.gatt.disconnect();
+          log("success", "GATT 연결 해제 완료");
+        } catch (err) {
+          log("warn", "GATT 연결 해제 실패:", err);
+        }
       }
-    }
 
-    // 스토리지 정리
-    if (clearStorage && saveToStorage) {
-      clearBluetoothDevice();
-      log("info", "저장된 기기 정보 삭제");
-    }
+      // 스토리지 정리
+      if (clearStorage && saveToStorage) {
+        clearBluetoothDevice();
+        log("info", "저장된 기기 정보 삭제");
+      }
 
-    // 상태 초기화
-    deviceRef.current = null;
-    characteristicRef.current = null;
-    setIsConnected(false);
-    setWeight(0);
-    setDeviceName(null);
-    setError(null);
-  }, [saveToStorage, stopReconnection, cleanupListeners]);
+      // 상태 초기화
+      deviceRef.current = null;
+      characteristicRef.current = null;
+      setIsConnected(false);
+      setWeight(0);
+      setDeviceName(null);
+      setError(null);
+    },
+    [saveToStorage, stopReconnection, cleanupListeners],
+  );
 
   const disconnectAndClear = useCallback(() => {
     disconnect(true);

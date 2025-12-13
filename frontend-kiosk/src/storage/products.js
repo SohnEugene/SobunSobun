@@ -47,18 +47,18 @@ export function getProductsCache(pids) {
   const cachedProducts = cacheData.products;
 
   // 요청된 pid 목록과 캐시된 제품의 pid를 비교
-  const cachedPids = new Set(cachedProducts.map(p => p.pid));
+  const cachedPids = new Set(cachedProducts.map((p) => p.pid));
   const requestedPids = new Set(pids);
 
   // 모든 요청된 pid가 캐시에 있는지 확인
-  const allPidsInCache = [...requestedPids].every(pid => cachedPids.has(pid));
+  const allPidsInCache = [...requestedPids].every((pid) => cachedPids.has(pid));
 
   if (!allPidsInCache) {
     return null;
   }
 
   // 요청된 pid에 해당하는 제품만 필터링하여 반환
-  return cachedProducts.filter(p => requestedPids.has(p.pid));
+  return cachedProducts.filter((p) => requestedPids.has(p.pid));
 }
 
 /**
@@ -92,7 +92,9 @@ export function updateProductInCache(product) {
   }
 
   // 기존 제품 목록에서 같은 pid를 가진 제품 제거
-  const filteredProducts = cacheData.products.filter(p => p.pid !== product.pid);
+  const filteredProducts = cacheData.products.filter(
+    (p) => p.pid !== product.pid,
+  );
 
   // 새 제품 추가
   filteredProducts.push(product);

@@ -7,11 +7,7 @@ import {
   deleteProductFromKiosk,
   getProducts,
 } from "../api";
-import {
-  saveKioskInfo,
-  getKioskInfo,
-  clearKioskInfo,
-} from "../storage/kiosk";
+import { saveKioskInfo, getKioskInfo, clearKioskInfo } from "../storage/kiosk";
 import {
   MANAGERS,
   saveManagerInfo,

@@ -27,7 +27,9 @@ export const MANAGERS = {
  */
 export function saveManagerInfo(managerCode) {
   if (!MANAGERS[managerCode]) {
-    console.warn(`💾 [Storage:Manager] 유효하지 않은 관리자 코드: ${managerCode}`);
+    console.warn(
+      `💾 [Storage:Manager] 유효하지 않은 관리자 코드: ${managerCode}`,
+    );
     return false;
   }
   return setItem(STORAGE_KEY, managerCode, MODULE_NAME);
