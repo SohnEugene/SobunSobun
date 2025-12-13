@@ -31,7 +31,7 @@ function log(level, message, ...args) {
   console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
     prefix,
     message,
-    ...args
+    ...args,
   );
 }
 
@@ -83,9 +83,7 @@ export async function request(endpoint, options = {}) {
     const errorDetail = await parseErrorResponse(response);
     log("error", `HTTP 에러 (${response.status})`, endpoint, errorDetail);
 
-    throw new Error(
-      `HTTP ${response.status}: ${errorDetail}`
-    );
+    throw new Error(`HTTP ${response.status}: ${errorDetail}`);
   } catch (error) {
     // 네트워크 에러와 HTTP 에러 구분
     if (error.name === "TypeError") {

@@ -7,7 +7,6 @@ import kakaoPayImage from "../assets/images/kakaopay.png";
 import tossPayImage from "../assets/images/tosspay.png";
 import useInactivityTimeout from "../hooks/useInactivityTimeout";
 
-
 const PAYMENT_METHODS = {
   KAKAO: "kakaopay",
   TOSS: "tosspay",

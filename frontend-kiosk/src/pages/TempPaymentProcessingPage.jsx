@@ -36,7 +36,7 @@ export default function TempPaymentProcessingPage({ onNext, onHome }) {
           product_price: session.pricePerGram,
           total_price: session.totalPrice,
           payment_method: "kakaopay",
-          manager: managerCode
+          manager: managerCode,
         };
 
         console.log("📤 Preparing payment:", paymentData);
@@ -45,7 +45,7 @@ export default function TempPaymentProcessingPage({ onNext, onHome }) {
 
         // Step 2: Approve payment
         const approvalData = {
-          txid: prepareResponse.txid
+          txid: prepareResponse.txid,
         };
 
         console.log("📤 Approving payment:", approvalData);
@@ -84,7 +84,7 @@ export default function TempPaymentProcessingPage({ onNext, onHome }) {
               color: "white",
               border: "none",
               borderRadius: "8px",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             처음으로 돌아가기
@@ -108,7 +108,7 @@ export default function TempPaymentProcessingPage({ onNext, onHome }) {
             marginTop: "2rem",
             width: "150px",
             height: "150px",
-            objectFit: "contain"
+            objectFit: "contain",
           }}
         />
       </div>

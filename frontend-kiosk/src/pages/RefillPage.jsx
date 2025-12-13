@@ -5,7 +5,7 @@ import "../styles/pages.css";
 import { useSession } from "../contexts/SessionContext";
 import { useBluetoothContext } from "../contexts/BluetoothContext";
 import scaleImg from "../assets/images/measurement.png";
-import pairImg from "../assets/images/pair.png"
+import pairImg from "../assets/images/pair.png";
 import { useSound } from "../contexts/SoundContext";
 import useInactivityTimeout from "../hooks/useInactivityTimeout";
 
@@ -24,8 +24,14 @@ export default function RefillStartPage({ onNext, onHome }) {
   const weightRef = useRef(0);
   const productNameRef = useRef(null);
 
-  const { session, setBottleWeight, setCombinedWeight, calculateTotalPrice } = useSession();
-  const { weight: btWeight, isConnected, isConnecting, connect } = useBluetoothContext();
+  const { session, setBottleWeight, setCombinedWeight, calculateTotalPrice } =
+    useSession();
+  const {
+    weight: btWeight,
+    isConnected,
+    isConnecting,
+    connect,
+  } = useBluetoothContext();
   const { playSound } = useSound();
 
   const displayWeight = devWeight !== null ? devWeight : btWeight;
@@ -52,7 +58,12 @@ export default function RefillStartPage({ onNext, onHome }) {
       console.log("🔧 [DEV] 현재 무게:", displayWeight);
       console.log("🔧 [DEV] 공병 무게:", session.bottleWeight);
       console.log("🔧 [DEV] isConnected:", isConnected);
-      return { step, weight: displayWeight, bottleWeight: session.bottleWeight, isConnected };
+      return {
+        step,
+        weight: displayWeight,
+        bottleWeight: session.bottleWeight,
+        isConnected,
+      };
     };
 
     // 컴포넌트 언마운트 시 정리
@@ -87,7 +98,11 @@ export default function RefillStartPage({ onNext, onHome }) {
   useEffect(() => {
     if (step === REFILL_STEPS.WELCOME) {
       const timer = setTimeout(() => {
-        setStep(isScaleConnected ? REFILL_STEPS.EMPTY_CONTAINER : REFILL_STEPS.CONNECT_SCALE);
+        setStep(
+          isScaleConnected
+            ? REFILL_STEPS.EMPTY_CONTAINER
+            : REFILL_STEPS.CONNECT_SCALE,
+        );
       }, 2000);
       return () => clearTimeout(timer);
     }
@@ -102,8 +117,11 @@ export default function RefillStartPage({ onNext, onHome }) {
 
   // 무게 안정화 감지
   useEffect(() => {
-    const threshold = step === REFILL_STEPS.FILL_PRODUCT ? session.bottleWeight : 0;
-    const needsStability = step === REFILL_STEPS.EMPTY_CONTAINER || step === REFILL_STEPS.FILL_PRODUCT;
+    const threshold =
+      step === REFILL_STEPS.FILL_PRODUCT ? session.bottleWeight : 0;
+    const needsStability =
+      step === REFILL_STEPS.EMPTY_CONTAINER ||
+      step === REFILL_STEPS.FILL_PRODUCT;
 
     if (!needsStability || displayWeight <= threshold) {
       setStableWeight(false);
@@ -132,7 +150,13 @@ export default function RefillStartPage({ onNext, onHome }) {
     setCombinedWeight(displayWeight);
     calculateTotalPrice(fillWeight);
     if (onNext) onNext();
-  }, [displayWeight, session.bottleWeight, setCombinedWeight, calculateTotalPrice, onNext]);
+  }, [
+    displayWeight,
+    session.bottleWeight,
+    setCombinedWeight,
+    calculateTotalPrice,
+    onNext,
+  ]);
 
   // 제품명 폰트 크기 동적 조정
   useEffect(() => {
@@ -142,7 +166,7 @@ export default function RefillStartPage({ onNext, onHome }) {
       const element = productNameRef.current;
 
       // 뷰포트 너비에서 kiosk-content의 padding(64px * 2)을 뺀 값을 사용
-      const availableWidth = window.innerWidth - (64 * 2);
+      const availableWidth = window.innerWidth - 64 * 2;
 
       let fontSize = 72; // 최대 폰트 크기
       element.style.fontSize = `${fontSize}px`;
@@ -156,8 +180,8 @@ export default function RefillStartPage({ onNext, onHome }) {
 
     // 약간의 지연을 주어 DOM이 완전히 렌더링되도록 함
     setTimeout(adjustFontSize, 0);
-    window.addEventListener('resize', adjustFontSize);
-    return () => window.removeEventListener('resize', adjustFontSize);
+    window.addEventListener("resize", adjustFontSize);
+    return () => window.removeEventListener("resize", adjustFontSize);
   }, [step, session.selectedProduct?.name]);
 
   // 치트키: x 키로 단계별 시뮬레이션
@@ -223,14 +247,19 @@ export default function RefillStartPage({ onNext, onHome }) {
         return (
           <div className="kiosk-content">
             <div className="kiosk-content-header">
-              <h1 className="kiosk-title-light">버튼을 눌러<br/> 저울을 연결해주세요</h1>
+              <h1 className="kiosk-title-light">
+                버튼을 눌러
+                <br /> 저울을 연결해주세요
+              </h1>
               <div className="kiosk-subtitle-light">
                 블루투스로 무게 데이터를 받아옵니다
               </div>
               {!navigator.bluetooth && (
                 <div className="bluetooth-warning">
-                  ⚠️ Web Bluetooth가 지원되지 않습니다.<br/>
-                  Chrome 브라우저를 사용하거나 Fully Kiosk 설정에서<br/>
+                  ⚠️ Web Bluetooth가 지원되지 않습니다.
+                  <br />
+                  Chrome 브라우저를 사용하거나 Fully Kiosk 설정에서
+                  <br />
                   'Use Chrome Engine'을 활성화해주세요.
                 </div>
               )}
@@ -241,7 +270,11 @@ export default function RefillStartPage({ onNext, onHome }) {
               onClick={connect}
               disabled={isConnecting || isScaleConnected}
             >
-              {isConnecting ? "연결 중..." : isScaleConnected ? "연결됨" : "저울 연결하기"}
+              {isConnecting
+                ? "연결 중..."
+                : isScaleConnected
+                  ? "연결됨"
+                  : "저울 연결하기"}
             </Button>
           </div>
         );
@@ -256,7 +289,7 @@ export default function RefillStartPage({ onNext, onHome }) {
                 저울에 올려주세요
               </h1>
               <div className="kiosk-subtitle-light">
-                저울의 영점이 맞춰져 있는지 꼭 확인! <br/> (TARE 버튼 클릭)
+                저울의 영점이 맞춰져 있는지 꼭 확인! <br /> (TARE 버튼 클릭)
               </div>
             </div>
             <ScaleDisplay />

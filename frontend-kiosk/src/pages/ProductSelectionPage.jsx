@@ -42,7 +42,7 @@ export default function ProductSelectionPage({ onNext, onHome }) {
         const productObjects = kioskInfo.products || [];
 
         // products는 {pid, available} 형태의 객체 배열이므로 pid만 추출
-        const productIds = productObjects.map(p => p.pid);
+        const productIds = productObjects.map((p) => p.pid);
 
         console.log("📋 [ProductSelection] 제품 ID 목록:", productIds);
 
@@ -56,7 +56,9 @@ export default function ProductSelectionPage({ onNext, onHome }) {
           setIsLoading(false);
 
           // 백그라운드에서 최신 정보 업데이트
-          console.log("🔄 [ProductSelection] 백그라운드에서 최신 정보 업데이트 중...");
+          console.log(
+            "🔄 [ProductSelection] 백그라운드에서 최신 정보 업데이트 중...",
+          );
           getKioskProducts(kioskId)
             .then((response) => {
               const availableProducts = response.products
@@ -71,7 +73,10 @@ export default function ProductSelectionPage({ onNext, onHome }) {
               console.log("✅ [ProductSelection] 최신 정보로 업데이트 완료");
             })
             .catch((err) => {
-              console.warn("⚠️ [ProductSelection] 백그라운드 업데이트 실패:", err);
+              console.warn(
+                "⚠️ [ProductSelection] 백그라운드 업데이트 실패:",
+                err,
+              );
               // 캐시된 데이터가 있으므로 에러 무시
             });
         } else {
@@ -89,7 +94,6 @@ export default function ProductSelectionPage({ onNext, onHome }) {
           setIsLoading(false);
           console.log("✅ [ProductSelection] 제품 정보 로드 완료");
         }
-
       } catch (err) {
         console.error("❌ [ProductSelection] 에러 발생:", err);
         setError(err.message);

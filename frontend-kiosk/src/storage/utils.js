@@ -21,7 +21,11 @@ export function log(module, level, message, ...args) {
   };
 
   const prefix = `${emoji[level] || "💾"} [Storage:${module}]`;
-  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](prefix, message, ...args);
+  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+    prefix,
+    message,
+    ...args,
+  );
 }
 
 /**
@@ -33,7 +37,8 @@ export function log(module, level, message, ...args) {
  */
 export function setItem(key, value, module = "Unknown") {
   try {
-    const serialized = typeof value === "string" ? value : JSON.stringify(value);
+    const serialized =
+      typeof value === "string" ? value : JSON.stringify(value);
     localStorage.setItem(key, serialized);
     return true;
   } catch (error) {

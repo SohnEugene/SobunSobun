@@ -8,12 +8,7 @@ import { useCallback, useEffect, useRef } from "react";
 // ============================================================
 // 상수 정의
 // ============================================================
-const TRACKED_EVENTS = [
-  "mousedown",
-  "keypress",
-  "scroll",
-  "touchstart",
-];
+const TRACKED_EVENTS = ["mousedown", "keypress", "scroll", "touchstart"];
 
 const isDevelopment = import.meta.env.DEV;
 
@@ -52,7 +47,11 @@ function log(message, ...args) {
  * // 특정 액션 후 타이머 리셋
  * onClick={() => { doSomething(); resetTimer(); }}
  */
-export default function useInactivityTimeout(onTimeout, timeout = 300000, enabled = true) {
+export default function useInactivityTimeout(
+  onTimeout,
+  timeout = 300000,
+  enabled = true,
+) {
   const timeoutRef = useRef(null);
 
   const resetTimer = useCallback(() => {

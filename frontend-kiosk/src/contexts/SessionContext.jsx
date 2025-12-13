@@ -3,7 +3,13 @@
  * 사용자의 제품 선택, 무게 측정, 결제 정보 등을 전역으로 관리
  */
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 // ============================================================
 // 상수 정의
@@ -36,9 +42,14 @@ function log(level, action, message, ...args) {
   };
 
   const prefix = `${emoji[level] || "📝"} [Session]`;
-  const fullMessage = action ? `${prefix} [${action}] ${message}` : `${prefix} ${message}`;
+  const fullMessage = action
+    ? `${prefix} [${action}] ${message}`
+    : `${prefix} ${message}`;
 
-  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](fullMessage, ...args);
+  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+    fullMessage,
+    ...args,
+  );
 }
 
 // ============================================================
@@ -62,9 +73,10 @@ export function SessionProvider({ children }) {
    */
   const updateSession = useCallback((updatesOrFn, actionName) => {
     setSession((prev) => {
-      const newSession = typeof updatesOrFn === 'function'
-        ? updatesOrFn(prev)
-        : { ...prev, ...updatesOrFn };
+      const newSession =
+        typeof updatesOrFn === "function"
+          ? updatesOrFn(prev)
+          : { ...prev, ...updatesOrFn };
 
       if (isDevelopment) {
         log("debug", actionName, "세션 업데이트:", newSession);
@@ -78,116 +90,158 @@ export function SessionProvider({ children }) {
    * 제품을 선택합니다
    * @param {Object} product - 선택할 제품 객체
    */
-  const selectProduct = useCallback((product) => {
-    if (!product) {
-      log("warn", "selectProduct", "제품이 null 또는 undefined입니다");
-      return;
-    }
+  const selectProduct = useCallback(
+    (product) => {
+      if (!product) {
+        log("warn", "selectProduct", "제품이 null 또는 undefined입니다");
+        return;
+      }
 
-    updateSession(
-      {
-        selectedProduct: product,
-        pricePerGram: product.price || 0,
-      },
-      'selectProduct'
-    );
-  }, [updateSession]);
+      updateSession(
+        {
+          selectedProduct: product,
+          pricePerGram: product.price || 0,
+        },
+        "selectProduct",
+      );
+    },
+    [updateSession],
+  );
 
   /**
    * 용기 보유 여부를 설정합니다
    * @param {boolean} hasContainer - 용기 보유 여부
    */
-  const setHasContainer = useCallback((hasContainer) => {
-    updateSession({ hasContainer }, 'setHasContainer');
-  }, [updateSession]);
+  const setHasContainer = useCallback(
+    (hasContainer) => {
+      updateSession({ hasContainer }, "setHasContainer");
+    },
+    [updateSession],
+  );
 
   /**
    * 용기 구매 여부를 설정합니다
    * @param {boolean} purchaseContainer - 용기 구매 여부
    */
-  const setPurchaseContainer = useCallback((purchaseContainer) => {
-    updateSession({ purchaseContainer }, 'setPurchaseContainer');
-  }, [updateSession]);
+  const setPurchaseContainer = useCallback(
+    (purchaseContainer) => {
+      updateSession({ purchaseContainer }, "setPurchaseContainer");
+    },
+    [updateSession],
+  );
 
   /**
    * 빈 병 무게를 설정합니다
    * @param {number} bottleWeight - 빈 병 무게 (g)
    */
-  const setBottleWeight = useCallback((bottleWeight) => {
-    if (bottleWeight < 0) {
-      log("warn", "setBottleWeight", "병 무게는 음수일 수 없습니다:", bottleWeight);
-      return;
-    }
+  const setBottleWeight = useCallback(
+    (bottleWeight) => {
+      if (bottleWeight < 0) {
+        log(
+          "warn",
+          "setBottleWeight",
+          "병 무게는 음수일 수 없습니다:",
+          bottleWeight,
+        );
+        return;
+      }
 
-    updateSession({ bottleWeight }, 'setBottleWeight');
-  }, [updateSession]);
+      updateSession({ bottleWeight }, "setBottleWeight");
+    },
+    [updateSession],
+  );
 
   /**
    * 제품이 담긴 병의 총 무게를 설정하고 순수 제품 무게를 계산합니다
    * @param {number} combinedWeight - 제품이 담긴 병의 총 무게 (g)
    */
-  const setCombinedWeight = useCallback((combinedWeight) => {
-    if (combinedWeight < 0) {
-      log("warn", "setCombinedWeight", "총 무게는 음수일 수 없습니다:", combinedWeight);
-      return;
-    }
+  const setCombinedWeight = useCallback(
+    (combinedWeight) => {
+      if (combinedWeight < 0) {
+        log(
+          "warn",
+          "setCombinedWeight",
+          "총 무게는 음수일 수 없습니다:",
+          combinedWeight,
+        );
+        return;
+      }
 
-    updateSession((prev) => {
-      const netWeight = combinedWeight - prev.bottleWeight;
-      return {
-        ...prev,
-        combinedWeight,
-        weight: netWeight > 0 ? netWeight : 0,
-      };
-    }, 'setCombinedWeight');
-  }, [updateSession]);
+      updateSession((prev) => {
+        const netWeight = combinedWeight - prev.bottleWeight;
+        return {
+          ...prev,
+          combinedWeight,
+          weight: netWeight > 0 ? netWeight : 0,
+        };
+      }, "setCombinedWeight");
+    },
+    [updateSession],
+  );
 
   /**
    * 총 가격을 계산합니다 (제품 가격 + 용기 가격)
    * @param {number} [customWeight] - 사용자 지정 무게 (선택적)
    * @returns {number} 계산된 총 가격
    */
-  const calculateTotalPrice = useCallback((customWeight) => {
-    const weightToUse = customWeight !== undefined ? customWeight : session.weight;
-    const { pricePerGram, purchaseContainer, selectedProduct } = session;
+  const calculateTotalPrice = useCallback(
+    (customWeight) => {
+      const weightToUse =
+        customWeight !== undefined ? customWeight : session.weight;
+      const { pricePerGram, purchaseContainer, selectedProduct } = session;
 
-    // 유효성 검사
-    if (!selectedProduct) {
-      log("warn", "calculateTotalPrice", "선택된 제품이 없습니다");
-      return 0;
-    }
+      // 유효성 검사
+      if (!selectedProduct) {
+        log("warn", "calculateTotalPrice", "선택된 제품이 없습니다");
+        return 0;
+      }
 
-    if (pricePerGram < 0) {
-      log("error", "calculateTotalPrice", "그램당 가격은 음수일 수 없습니다:", pricePerGram);
-      return 0;
-    }
+      if (pricePerGram < 0) {
+        log(
+          "error",
+          "calculateTotalPrice",
+          "그램당 가격은 음수일 수 없습니다:",
+          pricePerGram,
+        );
+        return 0;
+      }
 
-    if (weightToUse < 0) {
-      log("error", "calculateTotalPrice", "무게는 음수일 수 없습니다:", weightToUse);
-      return 0;
-    }
+      if (weightToUse < 0) {
+        log(
+          "error",
+          "calculateTotalPrice",
+          "무게는 음수일 수 없습니다:",
+          weightToUse,
+        );
+        return 0;
+      }
 
-    if (weightToUse === 0 || pricePerGram === 0) {
-      updateSession({ totalPrice: 0 }, 'calculateTotalPrice');
-      return 0;
-    }
+      if (weightToUse === 0 || pricePerGram === 0) {
+        updateSession({ totalPrice: 0 }, "calculateTotalPrice");
+        return 0;
+      }
 
-    const productPrice = pricePerGram * weightToUse;
-    const containerPrice = purchaseContainer ? CONTAINER_PRICE : 0;
-    const total = productPrice + containerPrice;
+      const productPrice = pricePerGram * weightToUse;
+      const containerPrice = purchaseContainer ? CONTAINER_PRICE : 0;
+      const total = productPrice + containerPrice;
 
-    updateSession({ totalPrice: total }, 'calculateTotalPrice');
+      updateSession({ totalPrice: total }, "calculateTotalPrice");
 
-    return total;
-  }, [session, updateSession]);
+      return total;
+    },
+    [session, updateSession],
+  );
 
   /**
    * 결제 방법을 설정합니다
    * @param {string} paymentMethod - 결제 방법 ("CARD", "CASH", "KAKAOPAY" 등)
    */
-  const setPaymentMethod = useCallback((paymentMethod) => {
-    updateSession({ paymentMethod }, 'setPaymentMethod');
-  }, [updateSession]);
+  const setPaymentMethod = useCallback(
+    (paymentMethod) => {
+      updateSession({ paymentMethod }, "setPaymentMethod");
+    },
+    [updateSession],
+  );
 
   /**
    * 세션을 초기 상태로 리셋합니다
@@ -199,27 +253,30 @@ export function SessionProvider({ children }) {
     setSession(initialSessionState);
   }, []);
 
-  const value = useMemo(() => ({
-    session,
-    selectProduct,
-    setHasContainer,
-    setPurchaseContainer,
-    setBottleWeight,
-    setCombinedWeight,
-    calculateTotalPrice,
-    setPaymentMethod,
-    resetSession,
-  }), [
-    session,
-    selectProduct,
-    setHasContainer,
-    setPurchaseContainer,
-    setBottleWeight,
-    setCombinedWeight,
-    calculateTotalPrice,
-    setPaymentMethod,
-    resetSession,
-  ]);
+  const value = useMemo(
+    () => ({
+      session,
+      selectProduct,
+      setHasContainer,
+      setPurchaseContainer,
+      setBottleWeight,
+      setCombinedWeight,
+      calculateTotalPrice,
+      setPaymentMethod,
+      resetSession,
+    }),
+    [
+      session,
+      selectProduct,
+      setHasContainer,
+      setPurchaseContainer,
+      setBottleWeight,
+      setCombinedWeight,
+      calculateTotalPrice,
+      setPaymentMethod,
+      resetSession,
+    ],
+  );
 
   return (
     <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
@@ -241,7 +298,7 @@ export function useSession() {
   if (!context) {
     throw new Error(
       "useSession must be used within a SessionProvider. " +
-      "SessionProvider로 컴포넌트 트리를 감싸주세요."
+        "SessionProvider로 컴포넌트 트리를 감싸주세요.",
     );
   }
 
