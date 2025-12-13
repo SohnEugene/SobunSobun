@@ -7,7 +7,7 @@
   flex-direction: column;
   width: 100%;
   min-height: 100vh;
-  gap: clamp(24px, 3vh, 32px);
+  gap: clamp(var(--spacing-lg), 3vh, var(--spacing-xl));
   padding: 5rem 3rem;
   background: #fdf3ee;
 }
@@ -21,14 +21,14 @@
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 16px;
-  padding: 0 clamp(8px, 1vw, 16px);
+  gap: var(--spacing-md);
+  padding: 0 clamp(var(--spacing-sm), 1vw, var(--spacing-md));
 }
 
 .header-text-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .subtitle {
@@ -66,10 +66,10 @@
   display: flex;
   flex-direction: column;
   align-items: start;
-  gap: 16px;
-  padding: 24px;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
   background: var(--color-white);
-  border-radius: 24px;
+  border-radius: var(--spacing-lg);
 }
 
 .management-subpanel {
@@ -83,13 +83,13 @@
 .home-grid {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: var(--spacing-2xl);
 }
 
 .home-info {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 .panel-header {
@@ -117,8 +117,8 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 
 /* ============================================================
@@ -309,49 +309,8 @@
    Buttons
    ============================================================ */
 
-.btn-primary,
-.btn-danger,
-.btn-ghost {
-  width: auto;
-  min-width: fit-content;
-  padding: 14px 22px;
-  border: none;
-  border-radius: 999px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform 200ms ease,
-    background 200ms ease;
-}
-
-.btn-primary {
-  background: #ec6a56;
-  color: white;
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-danger {
-  background: var(--color-danger);
-  color: white;
-}
-
-.btn-ghost {
-  background: var(--color-bg-light);
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-primary);
-}
-
-.btn-compact {
-  align-self: center;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-}
+/* 버튼 스타일은 components.css로 통합되었습니다.
+   btn-primary, btn-danger, btn-compact는 components.css 참조 */
 
 /* ============================================================
    Manager Selection
@@ -359,19 +318,20 @@
 
 .manager-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+  width: 100%;
   max-width: 800px;
 }
 
 .manager-button {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 24px;
+  gap: var(--spacing-sm);
+  padding: 20px;
   background: var(--color-white);
   border: 2px solid var(--color-border-medium);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
@@ -397,6 +357,34 @@
   color: var(--color-text-muted);
 }
 
+/* 작은 화면에서 2-3줄로 배치 */
+@media (max-width: 768px) {
+  .manager-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .manager-button {
+    padding: var(--spacing-md);
+  }
+
+  .manager-name {
+    font-size: 14px;
+  }
+
+  .manager-code {
+    font-size: 11px;
+  }
+}
+
+/* 매우 작은 화면에서는 2열로 고정 */
+@media (max-width: 480px) {
+  .manager-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
 /* ============================================================
    Product Selection
    ============================================================ */
@@ -404,18 +392,18 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: var(--spacing-md);
   width: 100%;
 }
 
 .product-button {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 24px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
   background: var(--color-white);
   border: 2px solid var(--color-border-medium);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
