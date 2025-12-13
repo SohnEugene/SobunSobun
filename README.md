@@ -1,94 +1,215 @@
-# 25-2 창의연구실습 인피니티 알맹
+# 소분소분 (SobunSobun)
+### 일상이 리필이 되는 Mini Refill Station
+**리필을 일상으로 끌어오는 가장 작은 혁신**
+<br>
 
-Almaeng Web Application - Customer and Shop Management Platform
+합리적인 비용으로 운영 가능한 **미니 무인 리필 스테이션**을 통해,
+리필 문화를 일상 속으로 자연스럽게 확산합니다.
+<br>
+<br>
+<br>
+**서울대학교 25-2 정보문화학 창의연구실습 인피니티알맹 팀 프로젝트**
+<br> 지원: 테크포임팩트 by 카카오임팩트
+<br> 도움: 알맹상점
 
-## Project Structure
+
+<br>
+
+## 1. 프로젝트 개요
+
+**소분소분**은 접근성, 경제성, 확장성을 갖춘 미니 무인 리필 스테이션 플랫폼입니다. <br>
+샴푸, 세제, 식료품 등의 내용물을 포장재 없이 판매하여 플라스틱 폐기물을 줄이는 친환경 소비 방식을 제공합니다.
+
+### 핵심 가치
+
+| 접근성 | 경제성 | 확장성 |
+|:---:|:---:|:---:|
+| 좁은 공간 어디에든<br/>일상 이동 경로에 결합 | 필요한 만큼, 적은 비용으로 리필 | MVP 비용 **15만원 이하**<br/>무인 시스템으로 빠르게 확장 |
+
+<br>
+<br>
+
+## 2. 배경 및 문제점
+
+### 리필스테이션의 현실
+
+- 2020년대 초반, 아모레퍼시픽·이마트 등 대기업이 동참하며 확산
+- 수익성과 운영 효율성 문제로 빠르게 감소
+- **작년 말 기준 전국 리필스테이션은 단 26곳**
+
+### 왜 줄어들었을까?
+
+#### 1. 리필 과정의 불편함
+- **정량 리필 기계**: 기계 부피가 크고 가격대가 높아 도입 비용 부담, 전용 용기 필요, 리필 속도 느림
+- **수동 리필 (알맹상점)**: 사용법이 익숙지 않아 초심자 접근 어려움, 무게 기입·계산 등 번거로운 과정
+
+#### 2. 공급 구조 악순환
+- 절대적인 리필스테이션 매장 수 부족
+- 수백kg 단위 벌크 포장의 분산 구매 어려움
+- 창업·운영 부담 증가 → 매장 수 정체
+
+#### 3. 접근성 악순환
+- 생활권 내 리필스테이션 접근 어려움 (49.2%가 "매장이 근처에 없어서" 이용하지 않음)
+- 유입된 사용자 이탈, 유입 약화로 이용률 감소
+- 매장 수 감소로 더욱 접근 어려워지는 악순환
+
+<br>
+<br>
+
+## 3. 솔루션
+
+
+**미니 무인 리필 스테이션**으로 세 가지 악순환을 동시에 해결합니다:
+
+- **'초심자 고객' 포섭**해 방문자 증가
+- **'소자본 창업자'의 안정적인 운영** 지원
+- 기존 수동 리필, 정량 리필 기계의 단점을 보완하면서 **구매 과정을 자동화**
+
+### 시스템 구조
+
+| 컴포넌트 | 설명 |
+|---------|------|
+| **태블릿** | 키오스크 형태로 터치 조작을 통해 쉽게 사용 |
+| **디스펜서** | 펌프 또는 밸브 형태의 디스펜서 |
+| **저울** | 블루투스 기능이 있는 저울로 실시간 무게 측정 및 전송 |
+
+<br>
+<br>
+
+## 4. 주요 기능
+
+### 사용자 워크플로우
+
+#### 0. 리필 전
+- **높은 접근성**: 집 주변에서 편리하게 리필 가능
+- **제품 정보 제공**: 키오스크에서 쉽게 정보 확인
+
+#### 1. 리필하기
+- **블루투스 저울**: 빠른 연결과 매끄러운 사용 경험
+- **빠른 가격 계산**: 자동으로 무게를 인식해 담은 제품 가격을 즉시 계산
+- 영점 조절도, 적을 것도 필요 없는 완전 자동화 흐름
+
+#### 2. 결제하기
+- **간편 결제 지원**: 카카오페이, 토스페이 등 모바일 간편 결제
+- **무인 매장 운영 가능**: 자율 결제로 상주 인력 없이도 24시간 운영
+
+#### 3. 스티커 부착
+- **QR 스티커**: 제품 정보를 직접 적을 필요 없이 QR 스티커 부착
+- **제품 정보 웹사이트**: 전용 웹사이트를 통해 모든 제품 정보를 한 곳에서 확인
+
+### 관리자 워크플로우
+
+- **판매 확인 및 관리**: 실시간 거래 내역, 총 수익, 판매량 확인
+- **대시보드 제공**: Transaction History, Product Management 통합 관리
+- **원격 설정 가능**: 제품 추가/수정/삭제 원격 관리
+
+---
+
+## 5. 유저 테스트 결과
+
+### 현장 테스트 데이터
+
+| 지표 | 결과 |
+|------|------|
+| 6일간 총 이용자 수 | **86명** |
+| 근처 매장 존재 시 이용 의향 | **97%** |
+| 리필 제품 기대 할인율 | 0~30% (약 88%) |
+| 실제 리필 시 할인율 | **평균 41.8%** (한국소비자원 조사) |
+
+### 사용자 피드백
+
+> "환경에 관심이 많아서 평소에 비누를 쓰는데, 이렇게 쓰레기 안 나오는 리필스테이션이 더 많아졌으면 좋겠어요."
+
+> "기숙사에서 수요가 있을 수밖에 없는 기획. 편의점보다 싸고 환경에도 도움이 된다고 하니 많이 쓰게 될 듯."
+
+> "소량으로 샴푸나 바디워시가 필요할 때가 많은데 이렇게 있으니 자주 사용할 것 같아요."
+
+<br>
+<br>
+
+## 6. 임팩트
+
+### 1. 접근성
+- 일상 이동 경로에 결합된 위치
+- 좁은 공간 어디에든 설치 가능
+- 리필을 위한 이동 시간: **5~10분 이내** (65.7%)
+
+### 2. 소분 경제
+- 1인 가구 맞춤형 소비
+- 필요한 만큼, 적은 비용으로
+- 소비자 할인율 기대치를 초과하는 실제 할인 제공
+
+### 3. 초기 투자 小
+- 개인 자영업자도 부담 없이 시작
+- 무인 시스템으로 빠르게 확장
+- **타사 무인 리필 스테이션 (2,000만원) vs 소분소분 MVP (15만원 이하)**
+
+<br>
+<br>
+
+## 7. 향후 발전 방향
+
+1. **편의점 제휴**: 1인 가구들의 최선호 공간, 확장성 증대
+2. **O2O 고객 관리**: 카카오톡 알림 및 사후 관리로 재방문 유도
+3. **소자본 창업자 유치**: 기존 리필 자판기와 차별화되는 적은 창업 자금 어필
+4. **친환경 소비 문화 확산**: 아름다운가게 등과 협력하여 하나의 사이클로 연결
+
+<br>
+<br>
+
+## 8. 팀 인피니티알맹
+
+| 이름 | 소속 | 이메일 | 역할 |
+|------|------|-----|-----|
+| 김나현 | 사회교육학과 23| |팀장, 기획, 디자인, 개발 보조 |
+| 손유진 | 자유전공학부 21 | qeugene2328@gmail.com|개발, 기획 |
+| 안유경 | 국악과 21| |기획, 디자인 |
+| 이지현 | 미학과 21| |기획, 디자인 |
+| 황지현 | 자유전공학부 20 | | 기획, 디자인 |
+
+
+ 프로젝트에 대한 문의사항은 (채우기)로 보내주세요.
+
+<br>
+<br>
+
+## 9. 프로젝트 구조
 
 ```
-Almaeng2/
-├── backend/              # Node.js + Express backend server
-├── frontend-customer/    # React frontend for customer interface
-├── frontend-shop/        # React frontend for shop management interface
+SobunSobun/
+├── backend/              # FastAPI 백엔드 서버
+├── frontend-kiosk/       # React 키오스크 웹 어플리케이션
+├── frontend-shop/        # React 관리자 대시보드
 └── README.md
 ```
 
-## Technology Stack
+<br>
+<br>
 
-- **Backend:** Node.js, Express.js
-- **Frontend:** React, React Router
-- **API Communication:** Axios
-- **Database:** (To be configured)
+## 10. 기술 스택
 
-## Continuous Deployment
+### Backend
+- **Framework**: FastAPI
+- **Server**: Uvicorn
+- **Database**: Firebase Firestore
+- **File Storage**: AWS S3
 
-- Continuous Deployment (CD) is enabled for this project.  
-- Whenever changes are pushed to the `main` branch, the project is automatically deployed.
+### Frontend
+- **Framework**: React 19
+- **Routing**: React Router DOM v7
+- **Build Tool**: Vite 7
+- **Code Quality**: ESLint, Prettier
 
-**Backend**  
-- The backend is deployed via Railway.  
-- Live API: https://almaeng2-production.up.railway.app/  
-- HTTP call logs can be monitored from the [Logs tab](https://railway.com/project/cf680da0-3fcc-4bd2-91d8-f11d0f1dc935/logs?environmentId=a0901102-d5a5-4b5a-a3a0-99d53ff19713)
+### Infrastructure
+- **Deployment**: Railway (Backend), Vercel (Frontend)
+- **Payment Integration**: 카카오페이, 토스페이
+- **Hardware Integration**: Web Bluetooth API
 
-**Frontend**  
-- The frontend is deployed via Vercel.  
-- Currently, only the customer service is deployed.  
-- Live site: https://almaeng2.vercel.app/
+### 배포
 
-## Getting Started
+- `main` 브랜치에 변경사항이 푸시될 때마다 자동으로 배포됩니다.
+- Backend (Railway): https://almaeng2-production.up.railway.app/
+- Frontend (Vercel)
+  - 키오스크 (고객용): https://sobunsobun.vercel.app/
+  - 관리자 대시보드: https://sobunsobun-dashboard.vercel.app/
 
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation & Running
-
-#### 1. Backend Server
-
-```bash
-cd backend
-npm install
-cp .env.example .env
-# Edit .env with your configuration
-npm run dev
-```
-
-Backend will run on `http://localhost:5000`
-
-#### 2. Customer Frontend
-
-```bash
-cd frontend-customer
-npm install
-npm start
-```
-
-Customer app will run on `http://localhost:3000`
-
-#### 3. Shop Frontend
-
-```bash
-cd frontend-shop
-npm install
-PORT=3001 npm start
-```
-
-Shop app will run on `http://localhost:3001`
-
-## Development
-
-- Backend API endpoints will be available at `http://localhost:5000/api`
-- Both frontends are configured to proxy API requests to the backend
-- Each application has its own README with more detailed instructions
-
-## Next Steps
-
-1. Set up database (PostgreSQL/MongoDB)
-2. Implement authentication system
-3. Create API endpoints for products, customers, and shops
-4. Build UI components for both interfaces
-5. Connect frontend to backend APIs
-
-## Contributing
-
-See individual README files in each directory for development guidelines.
