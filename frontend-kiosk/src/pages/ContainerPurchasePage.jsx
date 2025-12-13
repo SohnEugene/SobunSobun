@@ -27,16 +27,20 @@ export default function ContainerPurchasePage({ onNext, onHome }) {
       <KioskHeader onHome={onHome} />
       <div className="kiosk-content">
         <div className="kiosk-title">
-          아래에 비치된 용기를
+          리필 전용 다회용기를
           <br />
-          이용해주세요
+          추가하시겠어요?
         </div>
         <img className="bottle-image" src={bottlesImage} alt="" />
       </div>
       <div className="kiosk-footer">
         <div className="kiosk-button-container">
           <Button variant="primary" onClick={handlePurchase}>
-            리필 시작하기
+            추가하기 (500원)
+          </Button>
+
+          <Button onClick={handleSkip} variant="outlined">
+            건너뛰기
           </Button>
         </div>
       </div>

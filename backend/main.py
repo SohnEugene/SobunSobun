@@ -1,13 +1,11 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 import os
 
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-# Import services
+from app.routes import kiosks, payments, products
 from app.services.firebase import firebase_service
-# Import routers
-from app.routes import kiosks, products, payments
 
 # Load environment variables
 load_dotenv()
@@ -18,7 +16,7 @@ app = FastAPI(
     description="FastAPI backend for managing kiosks, products, and transactions with Firebase integration",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Configure CORS middleware
@@ -35,7 +33,7 @@ app.add_middleware(
         "http://127.0.0.1:5174",
         "http://127.0.0.1:8080",
         "https://almaeng2.vercel.app",
-        "https://almaeng2-shop.vercel.app"
+        "https://almaeng2-shop.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -75,7 +73,7 @@ async def root():
         "message": "Welcome to Kiosk Management API",
         "version": "1.0.0",
         "docs": "/docs",
-        "status": "running"
+        "status": "running",
     }
 
 
@@ -85,7 +83,7 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "firebase": "connected" if firebase_service.db else "disconnected"
+        "firebase": "connected" if firebase_service.db else "disconnected",
     }
 
 
@@ -102,10 +100,4 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
 
-    uvicorn.run(
-        "main:app",
-        host=host,
-        port=port,
-        reload=True,
-        log_level="info"
-    )
+    uvicorn.run("main:app", host=host, port=port, reload=True, log_level="info")

@@ -148,6 +148,7 @@
    Button Components
    ============================================================ */
 
+/* 키오스크 메인 화면용 큰 버튼 */
 .button {
   min-width: 70vw;
   padding: 32px 48px;
@@ -158,6 +159,7 @@
   font-weight: 900;
   color: var(--color-white);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .button:disabled {
@@ -189,7 +191,7 @@
 .button-small {
   min-width: 40vw;
   height: auto;
-  padding: 24px 48px;
+  padding: var(--spacing-lg) 48px;
   background-color: var(--color-white);
   border: none;
   border-radius: 100px;
@@ -202,4 +204,53 @@
   background-color: rgba(255, 255, 255, 0.5);
   opacity: 0.8;
   cursor: not-allowed;
+}
+
+/* ============================================================
+   관리 페이지용 작은 버튼
+   ============================================================ */
+
+.btn-primary,
+.btn-danger {
+  width: auto;
+  min-width: fit-content;
+  padding: 14px 22px;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+
+.btn-danger:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-compact {
+  align-self: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 20px;
+  font-size: 0.85rem;
 }

@@ -152,12 +152,6 @@ export default function RefillStartPage({ onNext, onHome }) {
         fontSize -= 2;
         element.style.fontSize = `${fontSize}px`;
       }
-
-      console.log('🔧 [FontSize] 제품명:', session.selectedProduct?.name);
-      console.log('🔧 [FontSize] 뷰포트 너비:', window.innerWidth);
-      console.log('🔧 [FontSize] 사용 가능 너비:', availableWidth);
-      console.log('🔧 [FontSize] 텍스트 너비:', element.scrollWidth);
-      console.log('🔧 [FontSize] 최종 폰트 크기:', fontSize);
     };
 
     // 약간의 지연을 주어 DOM이 완전히 렌더링되도록 함
@@ -229,7 +223,7 @@ export default function RefillStartPage({ onNext, onHome }) {
         return (
           <div className="kiosk-content">
             <div className="kiosk-content-header">
-              <h1 className="kiosk-title-light">버튼을 눌러 "Gotobake" <br/> 저울을 연결해주세요</h1>
+              <h1 className="kiosk-title-light">버튼을 눌러<br/> 저울을 연결해주세요</h1>
               <div className="kiosk-subtitle-light">
                 블루투스로 무게 데이터를 받아옵니다
               </div>

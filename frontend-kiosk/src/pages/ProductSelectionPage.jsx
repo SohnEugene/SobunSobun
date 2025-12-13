@@ -39,7 +39,10 @@ export default function ProductSelectionPage({ onNext, onHome }) {
         // 1단계: 키오스크 정보만 먼저 가져오기 (빠름)
         console.log("🔍 [ProductSelection] 키오스크 정보 조회 중...");
         const kioskInfo = await getKiosk(kioskId);
-        const productIds = kioskInfo.products || [];
+        const productObjects = kioskInfo.products || [];
+
+        // products는 {pid, available} 형태의 객체 배열이므로 pid만 추출
+        const productIds = productObjects.map(p => p.pid);
 
         console.log("📋 [ProductSelection] 제품 ID 목록:", productIds);
 

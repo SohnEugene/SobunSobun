@@ -64,7 +64,6 @@ function KioskFlow() {
         // 전체화면 API 지원 확인
         if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
           await document.documentElement.requestFullscreen();
-          console.log("✅ [Fullscreen] 전체화면 모드 활성화");
         }
       } catch (err) {
         console.warn("⚠️ [Fullscreen] 전체화면 모드 진입 실패:", err);
@@ -145,12 +144,6 @@ function KioskFlow() {
     ),
     refill: (
       <RefillPage
-        onNext={goToNextPage}
-        onHome={resetToHome}
-      />
-    ),
-    tempPaymentProcessing: (
-      <TempPaymentProcessingPage
         onNext={goToNextPage}
         onHome={resetToHome}
       />
